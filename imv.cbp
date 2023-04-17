@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="imv" />
+		<Option pch_mode="2" />
+		<Option compiler="mingw_w64_x64" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/imv" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="mingw_w64_x64" />
+				<Option parameters='&quot;C:\Users\Corey\Downloads\drive-download-20221216T215340Z-001\imv\bin\Debug\test.JOB&quot;' />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="include" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/imv" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="mingw_w64_x64" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DFUCKSQL" />
+					<Add directory="include" />
+				</Compiler>
+				<Linker>
+					<Add option="-O3" />
+					<Add option="-s" />
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
+				</Linker>
+				<ExtraCommands>
+					<Add before="version.bat" />
+				</ExtraCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add option="-DFUCKSQL" />
+			<Add directory="include" />
+			<Add directory="include/sqilte3" />
+		</Compiler>
+		<Linker>
+			<Add option="-static-libgcc" />
+			<Add option="-static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic" />
+			<Add library="fltk_gl" />
+			<Add library="fltk_forms" />
+			<Add library="fltk_images" />
+			<Add library="fltk_jpeg" />
+			<Add library="fltk_png" />
+			<Add library="fltk_z" />
+			<Add library="fltk" />
+			<Add library="dwmapi" />
+			<Add library="shlwapi" />
+			<Add library="comdlg32" />
+			<Add library="ole32" />
+			<Add library="uuid" />
+			<Add library="comctl32" />
+			<Add library="gdi32" />
+			<Add library="ws2_32" />
+			<Add library="sqlite3ppext" />
+			<Add library="sqlite3pp" />
+			<Add library="sqlite3" />
+			<Add directory="lib" />
+			<Add directory="lib/FLTK" />
+			<Add directory="include" />
+			<Add directory="lib/sqlite3" />
+		</Linker>
+		<Unit filename="form/window.fl" />
+		<Unit filename="include/bytestream.h" />
+		<Unit filename="include/database.h" />
+		<Unit filename="include/filesystem.h" />
+		<Unit filename="include/fmtJOB.h" />
+		<Unit filename="include/recipe.h" />
+		<Unit filename="include/resource.h" />
+		<Unit filename="include/scriptini.h" />
+		<Unit filename="include/stringenc.h" />
+		<Unit filename="include/stringext.h" />
+		<Unit filename="include/vectorext.h" />
+		<Unit filename="include/window.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="src/bytestream.cpp" />
+		<Unit filename="src/database.cpp" />
+		<Unit filename="src/filesystem.cpp" />
+		<Unit filename="src/fmtJOB.cpp" />
+		<Unit filename="src/icon.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="src/scriptini.cpp" />
+		<Unit filename="src/stringenc.cpp" />
+		<Unit filename="src/stringext.cpp" />
+		<Unit filename="src/window.cxx" />
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

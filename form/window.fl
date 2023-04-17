@@ -1,0 +1,3981 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0305
+header_name {../include/window.h}
+code_name {../src/window.cxx}
+declblock {\#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1} {after {\#endif}
+} {
+  decl {\#define DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1 19} {private global
+  }
+}
+
+declblock {\#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE} {after {\#endif}
+} {
+  decl {\#define DWMWA_USE_IMMERSIVE_DARK_MODE 20} {private global
+  }
+}
+
+comment {>>>>>>>>>>>    Standard Libraries       <<<<<<<<<<<<} {in_source in_header
+}
+
+decl {\#include <vector>} {public global
+}
+
+comment {Windows OS Libraries} {in_source in_header
+}
+
+decl {\#include <windows.h>} {public global
+}
+
+decl {\#include <dwmapi.h> // need to link -ldwmapi} {public global
+}
+
+comment {>>>>>>>>>>>    3rd Party Libraries      <<<<<<<<<<<<} {in_source in_header
+}
+
+comment {To use FLTK add this to the linker: -lfltk -luuid -lcomctl32 -lgdi32} {not_in_source in_header
+}
+
+decl {\#include <FL/x.H>} {
+  comment {Needed to Load Icon} public global
+}
+
+decl {\#include <FL/names.h>} {
+  comment {array of keypress names, needed for keyhandler} public global
+}
+
+decl {\#include <FL/Fl_Native_File_Chooser.H>} {public global
+}
+
+decl {\#include <FL/Fl_Multi_Label.H>} {
+  comment {Allows Images In Menu} public global
+}
+
+decl {\#include <FL/Fl_Text_Editor.H>} {
+  comment {derivitive class of Fl_Text_Editor, to add key handling} public global
+}
+
+decl {\#include <FL/Fl_Shared_Image.H>} {
+  comment {to share images between widgets?} public global
+}
+
+decl {\#include <FL/FL_BMP_Image.H>} {public global
+}
+
+decl {\#include <FL/FL_JPEG_Image.H>} {public global
+}
+
+decl {\#include <FL/FL_PNG_Image.H>} {public global
+}
+
+decl {\#include <FL/Fl_Light_Button.H>} {public global
+}
+
+decl {\#include <FL/Fl_RGB_Image.H>} {selected public global
+}
+
+decl {\#include <FL/FL_Scroll.H>} {public global
+}
+
+decl {\#include <FL/Fl_Box.H>} {public global
+}
+
+decl {\#include <FL/Fl_Group.H>} {public global
+}
+
+decl {\#include <FL/fl_ask.h>} {public global
+}
+
+declblock {\#if !defined(FUCKSQL)} {public after {\#endif}
+} {
+  decl {\#include <sqlite3.h>} {
+    comment {add to linker -lsqliteppext -lsqilte3pp -lsqlite3 -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic} public global
+  }
+}
+
+comment {>>>>>>>>>>>     Personal Libraries      <<<<<<<<<<<<} {in_source in_header
+}
+
+decl {\#include "filesystem.h"} {public global
+}
+
+decl {\#include "vectorext.h"} {public global
+}
+
+decl {\#include "stringext.h"} {public global
+}
+
+decl {\#include "stringenc.h"} {public global
+}
+
+decl {\#include "bytestream.h"} {public global
+}
+
+decl {\#include "resource.h"} {public global
+}
+
+decl {\#include "database.h"} {public global
+}
+
+comment {>>>>>>>>>>>     GLOBAL VARIABLES       <<<<<<<<<<<<} {in_source not_in_header
+}
+
+comment {} {in_source not_in_header
+}
+
+decl {signed int box_index = -1;} {private global
+}
+
+decl {bool box_draw = false;} {private global
+}
+
+decl {int boxorg[2] = {0, 0 };} {private global
+}
+
+decl {int imgmin_limit_default = 10;} {private global
+}
+
+decl {int imgmin_limit = 10;} {private global
+}
+
+decl {int imgmax_limit = 32766;} {private global
+}
+
+decl {std::vector<unsigned char> r, g, b;} {private local
+}
+
+decl {std::vector<std::wstring> filesW;} {private global
+}
+
+decl {std::string imgm5d = "3B5D3C7D207E37DCEEEDD301E35E2E58";} {private global
+}
+
+decl {std::wstring root_path = L""; // holds the root path of the last image opened} {private global
+}
+
+decl {std::wstring work_path = L""; // for managing the folder} {private global
+}
+
+decl {HWND xid = nullptr;} {
+  comment {Stores the Windows ID in order to Access the Title Bar} private local
+}
+
+decl {int sel_file = -1;} {private global
+}
+
+decl {unsigned int num_files = 0;} {private global
+}
+
+decl {Fl_Text_Buffer *textbuf;} {private global
+}
+
+decl {bool debug = false;} {private global
+}
+
+decl {bool USE_DARK_MODE = false;} {private local
+}
+
+decl {float imgzoom = 1.0f;} {private global
+}
+
+decl {extern database* settings;} {
+  comment {include database.h, makes queries to the SQLite3 database} public global
+}
+
+decl {std::vector<std::string> filelist(10, "");} {private global
+}
+
+decl {database* settings = nullptr;} {private global
+}
+
+decl {Fl_Image* imgbuf = nullptr;} {private global
+}
+
+decl {Fl_Image* imgtmp = nullptr;} {private global
+}
+
+decl {int keycombo[2] = {0, 0 };} {private global
+}
+
+decl {int imgorg[2] = {0, 0 };} {private global
+}
+
+decl {int imgpos[2] = {0, 0 };} {private global
+}
+
+decl {const unsigned int num_img_types = 6;} {private global
+}
+
+decl {const std::wstring knownTypes[num_img_types] = {L".jpg", L".jpeg", L".bmp", L".png", L".txt" L".csv"};} {private global
+}
+
+comment {FLTK Headers} {in_source not_in_header
+}
+
+decl {unsigned char imgfit = 0;} {
+  comment {0 - no action
+1 - lock zoom
+2 - shrink to fit
+3 - enlarge to fit} private global
+}
+
+decl {unsigned char write_txt = 5;} {
+  comment { 0 not set
+ 1 save text
+ 2 are there txt changes to save
+ 3 save csv
+ 4 are there csv changes to save} private global
+}
+
+decl {unsigned char visiblity = 7;} {
+  comment { 0 not set
+ 1 regions visible
+ 2 editor visible
+ 3 tags visible} private global
+}
+
+decl {int edt_font_size = 12;} {private local
+}
+
+decl {Fl_Cursor mousecur = Fl_Cursor::FL_CURSOR_DEFAULT;} {private global
+}
+
+comment {>>>>>>>>>>>     RESOURCES (IMAGES)       <<<<<<<<<<<<} {in_source not_in_header
+}
+
+decl {enum Fl_Wrap {WRAP_NONE, WRAP_AT_COLUMN, WRAP_AT_PIXE, WRAP_AT_BOUNDS};} {private global
+}
+
+decl {const unsigned char image_exit[] = {0,0,0,0,0,0,0,18,0,0,0,68,0,0,0,55,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,12,0,0,0,60,0,0,0,60,0,0,0,12,0,0,0,0,0,0,0,18,73,7,11, 201,206,23,31,254,201,23,31,253,76,7,11,168,0,0,0,12,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,18,62,7,9,178,200,23,29,254,205,23,31,254,81,10,12,184,0,0,0,12,0, 0,0,78,189,21,29,254,236,28,37,255,236,28,37,255,221,25,34,255,76,9,10,171,0, 0,0,12,0,0,0,0,0,0,0,0,0,0,0,18,61,7,8,183,217,25,33,255,236,28,37,255,236,28, 37,255,207,23,31,254,0,0,0,60,0,0,0,75,183,21,28,254,236,28,37,255,236,28,37, 255,236,28,37,255,220,25,33,255,73,7,11,167,0,0,0,12,0,0,0,18,61,7,8,184,217,25, 32,255,236,28,37,255,236,28,37,255,236,28,37,255,194,22,29,253,0,0,0,58,0,0,0, 15,49,5,6,192,214,24,32,255,236,28,37,255,236,28,37,255,236,28,37,255,220,26, 33,255,71,7,10,175,59,7,8,188,217,25,33,255,236,28,37,255,236,28,37,255,236,28, 37,255,216,25,33,255,58,6,9,172,0,0,0,9,0,0,0,0,0,0,0,26,48,5,6,195,212,23,31, 255,236,28,37,255,236,28,37,255,236,28,37,255,220,25,33,255,217,25,34,255,236, 28,37,255,236,28,37,255,236,28,37,255,215,24,33,255,59,6,8,178,0,0,0,18,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,24,46,5,7,192,211,24,32,255,236,28,37,255,236,28,37, 255,236,28,37,255,236,28,37,255,236,28,37,255,236,28,37,255,216,25,33,255,59,6, 8,178,0,0,0,18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24,45,5,6,197, 212,23,33,255,236,28,37,255,236,28,37,255,236,28,37,255,236,28,37,255,216,24,33, 255,56,5,8,183,0,0,0,18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 21,59,7,9,193,219,25,33,255,236,28,37,255,236,28,37,255,236,28,37,255,236,28, 37,255,220,25,33,255,71,7,10,175,0,0,0,12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,21,64,7,9,187,218,25,34,255,236,28,37,255,236,28,37,255,236,28,37, 255,236,28,37,255,236,28,37,255,236,28,37,255,220,25,33,255,75,8,10,169,0,0,0, 12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,21,64,7,9,187,218,25,33,255,236,28,37,255,236, 28,37,255,236,28,37,255,215,24,32,255,211,24,32,255,236,28,37,255,236,28,37, 255,236,28,37,255,220,25,33,255,75,8,10,169,0,0,0,12,0,0,0,0,0,0,0,12,62,7,10, 184,219,25,33,255,236,28,37,255,236,28,37,255,236,28,37,255,214,24,32,255,53,5, 7,183,44,5,6,196,211,24,32,255,236,28,37,255,236,28,37,255,236,28,37,255,221, 25,33,255,76,8,11,165,0,0,0,6,0,0,0,70,184,21,28,253,236,28,37,255,236,28,37, 255,236,28,37,255,213,24,32,255,54,6,7,173,0,0,0,18,0,0,0,24,45,5,7,191,211,24, 32,255,236,28,37,255,236,28,37,255,236,28,37,255,194,22,29,252,0,0,0,48,0,0,0, 82,188,21,28,254,236,28,37,255,236,28,37,255,213,24,32,255,54,6,7,173,0,0,0,15, 0,0,0,0,0,0,0,0,0,0,0,24,44,4,7,191,210,24,32,255,236,28,37,255,236,28,37,255, 188,22,28,253,0,0,0,53,0,0,0,24,55,6,7,204,185,21,28,254,184,21,28,253,54,6,7, 170,0,0,0,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24,44,4,7,185,176,20,27,253, 179,20,26,254,67,7,9,187,0,0,0,12,0,0,0,0,0,0,0,21,0,0,0,79,0,0,0,68,0,0,0,9,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15,0,0,0,70,0,0,0,70,0,0, 0,15,0,0,0,0};} {
+  comment {MENU EXIT ICON} private global
+}
+
+decl {Fl_Image *icon_exit() { static Fl_Image *image = new Fl_RGB_Image(image_exit, 16, 16, 4, 0); return image; }} {private global
+}
+
+decl {const unsigned char image_about[] = {0,0,0,0,0,0,0,58,0,0,0,172,0,0,0,205,0,0,0,209,0,0,0,209,0,0,0,209,0,0,0, 209,0,0,0,209,0,0,0,209,0,0,0,209,0,0,0,209,0,0,0,202,0,0,0,136,0,0,0,31,0,0,0, 0,0,0,0,56,51,31,18,249,206,126,76,255,244,149,89,255,245,148,90,255,245,148, 90,255,245,148,90,255,245,148,90,255,245,148,90,255,245,148,90,255,245,148,90, 255,245,148,90,255,244,149,89,255,206,124,76,255,55,33,20,226,0,0,0,29,0,0,0, 157,202,123,74,255,247,150,91,255,247,150,91,255,247,150,91,255,247,150,91,255, 245,148,90,255,140,85,51,208,99,60,36,190,232,141,85,255,247,150,91,255,247,150, 91,255,247,150,91,255,247,150,91,255,200,120,73,255,0,0,0,94,0,0,0,171,239,144, 87,255,247,150,91,255,247,150,91,255,247,150,91,255,247,150,91,255,242,147,89, 255,17,9,5,194,0,0,0,191,189,115,69,255,247,150,91,255,247,150,91,255,247,150, 91,255,247,150,91,255,238,144,87,255,0,0,0,108,0,0,0,171,239,145,88,255,247, 150,91,255,247,150,91,255,247,150,91,255,247,150,91,255,245,148,91,255,180,110, 67,255,149,91,55,255,244,149,89,255,247,150,91,255,247,150,91,255,247,150,91, 255,247,150,91,255,239,144,87,255,0,0,0,109,0,0,0,171,239,145,88,255,247,150,91, 255,247,150,91,255,247,150,91,255,247,150,91,255,247,150,91,255,247,150,91,255, 247,150,91,255,247,150,91,255,247,150,91,255,247,150,91,255,247,150,91,255,247, 150,91,255,239,144,87,255,0,0,0,109,0,0,0,171,239,145,88,255,247,150,91,255,247, 150,91,255,247,150,91,255,247,150,91,255,240,145,89,255,103,63,37,170,109,66,40, 159,194,118,71,255,247,150,91,255,247,150,91,255,247,150,91,255,247,150,91,255, 239,144,87,255,0,0,0,109,0,0,0,171,239,145,88,255,247,150,91,255,247,150,91,255, 247,150,91,255,247,150,91,255,238,144,87,255,4,2,0,125,0,0,0,106,175,106,64,255, 247,150,91,255,247,150,91,255,247,150,91,255,247,150,91,255,239,144,87,255,0,0, 0,109,0,0,0,171,239,145,88,255,247,150,91,255,247,150,91,255,247,150,91,255, 247,150,91,255,238,144,87,255,4,2,0,125,0,0,0,106,175,106,64,255,247,150,91,255, 247,150,91,255,247,150,91,255,247,150,91,255,239,144,87,255,0,0,0,109,0,0,0,171, 239,145,88,255,247,150,91,255,247,150,91,255,247,150,91,255,247,150,91,255,238, 144,87,255,4,2,0,125,0,0,0,106,175,106,64,255,247,150,91,255,247,150,91,255,247, 150,91,255,247,150,91,255,239,144,87,255,0,0,0,109,0,0,0,171,239,145,88,255,247, 150,91,255,247,150,91,255,247,150,91,255,247,150,91,255,238,144,87,255,4,2,0, 125,0,0,0,106,175,106,64,255,247,150,91,255,247,150,91,255,247,150,91,255,247, 150,91,255,239,144,87,255,0,0,0,108,0,0,0,171,239,145,88,255,247,150,91,255,247, 150,91,255,247,150,91,255,247,150,91,255,238,144,87,255,4,2,0,132,0,0,0,115,175, 106,64,255,247,150,91,255,247,150,91,255,247,150,91,255,247,150,91,255,235,143, 86,255,0,0,0,90,0,0,0,171,239,145,88,255,247,150,91,255,247,150,91,255,247,150, 91,255,247,150,91,255,241,146,88,255,92,56,34,254,91,55,33,253,201,122,74,255, 247,150,91,255,247,150,91,255,247,150,91,255,247,150,91,255,182,110,67,240,0,0, 0,22,0,0,0,171,239,145,88,255,245,148,90,255,196,118,72,244,196,118,71,235, 196,118,71,235,196,118,71,235,196,118,71,235,196,118,71,235,196,118,71,235,196, 118,71,235,196,118,71,235,197,119,72,232,190,116,70,189,120,71,43,36,0,0,0,0,0, 0,0,168,240,145,88,254,148,90,53,204,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,65,200, 121,73,149,0,0,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};} {
+  comment {MENU ABOUT ICON} private global
+}
+
+decl {Fl_Image *icon_about() { static Fl_Image *image = new Fl_RGB_Image(image_about, 16, 16, 4, 0); return image; }} {private global
+}
+
+decl {const unsigned char image_dummy[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0};} {
+  comment {MENU PLACE HOLDER ICON} private global
+}
+
+decl {Fl_Image *icon_dummy() { static Fl_Image *image = new Fl_RGB_Image(image_dummy, 16, 16, 4, 0); return image; }} {private global
+}
+
+decl {const unsigned char image_open[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,141,90,16,107,226,148,27,255,228,151,27,255,228,151,27,255,228,151,27, 255,214,140,26,254,103,67,9,57,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,146,96,18,188,192,126,23,250,234,154,29,255,234,154,29,255, 234,154,29,255,234,154,29,255,234,154,29,255,184,121,22,250,148,97,17,218,148, 97,17,218,148,97,17,218,148,97,17,218,149,98,18,211,169,119,17,15,0,0,0,0,0,0, 0,0,225,148,28,255,240,184,87,255,246,210,139,255,246,210,139,255,246,210,139, 255,246,210,139,255,246,210,139,255,246,210,139,255,246,210,139,255,246,210,139, 255,245,209,138,255,234,164,51,255,234,154,29,255,134,86,14,74,0,0,0,0,0,0,0,0, 225,148,28,255,245,211,144,255,59,57,46,139,38,38,28,54,38,38,28,54,38,38,28,54, 38,38,28,54,38,38,28,54,38,38,28,54,38,38,28,54,38,38,28,54,59,42,15,122,228, 150,28,255,134,86,14,74,0,0,0,0,0,0,0,0,225,148,28,255,243,210,142,255,5,5,5,49, 85,85,28,9,71,71,28,18,71,71,28,18,71,71,28,18,71,71,28,18,71,71,28,18,71,71, 28,18,71,71,28,18,42,42,17,30,219,146,32,255,129,89,17,89,81,69,11,22,102,76,0, 10,225,148,28,255,243,210,142,255,79,68,18,97,235,196,34,255,246,204,36,255, 246,204,36,255,246,204,36,255,246,204,36,255,246,204,36,255,246,204,36,255,246, 204,36,255,246,204,36,255,246,204,37,255,247,205,36,255,248,206,36,255,219,181, 31,252,225,148,28,255,243,210,142,255,148,125,25,232,248,206,36,255,248,206,36, 255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36,255, 248,206,36,255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36,255,166, 137,23,223,225,148,28,255,244,209,135,255,232,194,35,255,248,206,36,255,248,206, 36,255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36, 255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36,255,245,203,35,255, 150,125,20,63,225,148,28,255,242,198,73,255,248,206,36,255,248,206,36,255,248, 206,36,255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36,255,248,206, 36,255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36,255,184,153,26, 240,0,0,0,0,225,148,28,255,244,197,40,255,248,206,36,255,248,206,36,255,248,206, 36,255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36, 255,248,206,36,255,248,206,36,255,248,206,36,255,246,204,35,255,144,119,20,113, 0,0,0,0,228,161,37,255,248,205,36,255,248,206,36,255,248,206,36,255,248,206, 36,255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36,255,248,206,36, 255,248,206,36,255,248,206,36,255,248,206,36,255,206,171,29,250,0,0,0,0,0,0,0,0, 215,170,34,250,242,202,34,255,242,202,34,255,242,202,34,255,242,202,34,255,242, 202,34,255,242,202,34,255,242,202,34,255,242,202,34,255,242,202,34,255,242,202, 34,255,242,202,34,255,239,199,34,255,147,122,21,142,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};} {
+  comment {MENU OPEN ICON} private local
+}
+
+decl {Fl_Image *icon_open() { static Fl_Image *image = new Fl_RGB_Image(image_open, 16, 16, 4, 0); return image; }} {private global
+}
+
+decl {static const unsigned char image_checked[] = {0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1, 0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,255,0,0,0,255,0,0,0,255,0,0,0,255,0,0, 0,255,0,0,0,255,0,0,0,255,0,0,0,255,0,0,0,255,0,0,0,255,0,0,0,255,0,0,0,254,0, 0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,255,0,0,0,53,0,0,0,53,0,0,0,53,0,0,0,53,0, 0,0,53,0,0,0,53,0,0,0,53,0,0,0,53,0,0,0,52,0,0,0,52,0,0,0,53,0,0,0,255,0,0,0, 1,0,0,0,1,0,0,0,1,0,0,0,255,0,0,0,53,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1, 0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,254,0,0,0,255,0,0,0,254,0,0,0,1,0,0,0,1, 0,0,0,255,0,0,0,53,0,0,0,1,0,0,0,1,0,0,0,255,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1, 0,0,0,255,0,0,0,254,0,0,0,254,0,0,0,255,0,0,0,255,0,0,0,1,0,0,0,0,0,0,0,255,0, 0,0,51,0,0,0,0,0,0,0,255,0,0,0,254,0,0,0,254,0,0,0,1,0,0,0,1,0,0,0,254,0,0,0, 254,0,0,0,254,0,0,0,254,0,0,0,108,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,255,0,0,0,51,0, 0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254, 0,0,0,254,0,0,0,143,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,51,0,0,0, 99,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0, 143,0,0,0,0,0,0,0,255,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,255,0,0,0,53,0,0,0,1,0,0,0, 120,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,144,0,0,0,1,0,0,0,0, 0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,1,0,0,0,255,0,0,0,53,0,0,0,1,0,0,0,1,0,0,0, 129,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,144,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,255,0, 0,0,86,0,0,0,0,0,0,0,2,0,0,0,255,0,0,0,55,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,120,0, 0,0,254,0,0,0,144,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,86,0,0,0,0, 0,0,0,2,0,0,0,255,0,0,0,55,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,1,0,0,0,99,0,0,0,1,0, 0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,2,0,0,0,255,0, 0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254, 0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,2,0,0,0,254,0, 0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254, 0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,1,0,0,0,1,0,0, 0,87,0,0,0,87,0,0,0,87,0,0,0,87,0,0,0,86,0,0,0,86,0,0,0,86,0,0,0,86,0,0,0,86, 0,0,0,86,0,0,0,86,0,0,0,86,0,0,0,86,0,0,0,0};} {
+  comment {CHECK ICON} private global
+}
+
+decl {Fl_Image *icon_checked() { static Fl_Image *image = new Fl_RGB_Image(image_checked, 16, 16, 4, 0); return image; }} {private global
+}
+
+decl {static const unsigned char image_unchecked[] = {0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1, 0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,255,0,0,0,255,0,0,0,255,0,0,0,255,0,0, 0,255,0,0,0,255,0,0,0,255,0,0,0,255,0,0,0,255,0,0,0,255,0,0,0,255,0,0,0,254,0, 0,0,255,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,255,0,0,0,52,0,0,0,52,0,0,0,52,0,0,0,52, 0,0,0,52,0,0,0,52,0,0,0,52,0,0,0,52,0,0,0,51,0,0,0,51,0,0,0,52,0,0,0,255,0,0, 0,86,0,0,0,0,0,0,0,1,0,0,0,255,0,0,0,52,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0, 1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,1, 0,0,0,255,0,0,0,52,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,1,0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,51,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,51,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,86,0, 0,0,0,0,0,0,0,0,0,0,255,0,0,0,51,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,1,0,0,0, 255,0,0,0,52,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0, 0,0,0,0,0,0,0,0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,1,0,0,0,255,0,0,0,52,0,0,0,1,0, 0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0, 255,0,0,0,86,0,0,0,0,0,0,0,2,0,0,0,255,0,0,0,53,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1, 0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,86,0,0,0,0,0, 0,0,2,0,0,0,255,0,0,0,53,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,1,0,0,0,1,0,0,0,1,0,0, 0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,2,0,0,0,255,0,0, 0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0, 0,0,254,0,0,0,254,0,0,0,254,0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,2,0,0,0,254,0,0, 0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0,0,0,254,0, 0,0,254,0,0,0,254,0,0,0,254,0,0,0,255,0,0,0,86,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0, 88,0,0,0,88,0,0,0,88,0,0,0,88,0,0,0,86,0,0,0,86,0,0,0,86,0,0,0,86,0,0,0,86,0,0, 0,86,0,0,0,87,0,0,0,87,0,0,0,86,0,0,0,0};} {
+  comment {UNCHECK ICON} private global
+}
+
+decl {Fl_Image *icon_unchecked() { static Fl_Image *image = new Fl_RGB_Image(image_unchecked, 16, 16, 4, 0); return image; }} {private global
+}
+
+comment {>>>>>>>>>>> INITIALIZING FUNCTIONS <<<<<<<<<<<<} {in_source in_header
+}
+
+Function {rebuild_mnu_recents()} {private return_type void
+} {
+  code {if (settings == nullptr) {return;}
+unsigned int num_recents = settings->recents.size();
+if (num_recents == 0) {return;}
+
+for (unsigned int i = 0; i < 10; i++) {
+    filelist.at(i) = "&" + to_string(i + 1) + ".) ";
+    if (i < num_recents) {
+        filelist.at(i) += getFilename::FromPath(settings->recents.at(i));
+        }
+    //std::cout << "File" << i << ": \\t" << filelist.at(i) << std::endl;
+
+    switch (i) {
+        case 0: {itm_recents0->label(filelist.at(i).c_str()); break;}
+        case 1: {itm_recents1->label(filelist.at(i).c_str()); break;}
+        case 2: {itm_recents2->label(filelist.at(i).c_str()); break;}
+        case 3: {itm_recents3->label(filelist.at(i).c_str()); break;}
+        case 4: {itm_recents4->label(filelist.at(i).c_str()); break;}
+        case 5: {itm_recents5->label(filelist.at(i).c_str()); break;}
+        case 6: {itm_recents6->label(filelist.at(i).c_str()); break;}
+        case 7: {itm_recents7->label(filelist.at(i).c_str()); break;}
+        case 8: {itm_recents8->label(filelist.at(i).c_str()); break;}
+        case 9: {itm_recents9->label(filelist.at(i).c_str()); break;}
+        }
+    }} {}
+}
+
+Function {init_database()} {private return_type void
+} {
+  code {// Creates the Database Object
+if (settings == nullptr) {
+    settings = new database;
+    }
+
+// opens or auto creates a new SQL database next to the EXE
+settings->open("imvdb.db");
+
+// read the recents files
+rebuild_mnu_recents();
+
+
+//    settings->addTag("example45", "om  a pc");
+//    settings->addImage("C:\\\\test\\\\image.png", "0000000000000000002", 512, 512);
+//    settings->modify("image", "hash", "0000000000000000000", std::vector<std::string>{"fullpath"}, std::vector<std::string>{"Corey"});
+//
+//        std::cout << settings->rows("image", "hash") << std::endl;
+
+
+//    std::vector<std::string> data = settings->fetch("image", "hash", "'0000000000000000000'", std::vector<std::string>{"fullpath"}, "T");
+//    for (unsigned int i = 0; i < data.size(); i++) {
+//        std::cout << "data: " << data.at(i) << std::endl;
+//        }} {}
+}
+
+Function {toggle_theme()} {
+  comment {Toggles Light / Dark Themes} return_type void
+} {
+  code {USE_DARK_MODE = !is_light_theme();
+//int N = 4 + FL_NUM_GRAY;
+if (USE_DARK_MODE) { // dark mode
+    Fl::set_color(FL_BACKGROUND_COLOR, 50, 50, 50);
+    Fl::set_color(FL_BACKGROUND2_COLOR, 120, 120, 120);
+    Fl::set_color(FL_FOREGROUND_COLOR, 240, 240, 240);
+    for (int i = 0; i < FL_NUM_GRAY; i++) {
+        double min = 0., max = 135.;
+        int d = (int)(min + i * (max - min) / (FL_NUM_GRAY - 1.));
+        Fl::set_color(fl_gray_ramp(i), d, d, d);
+        }
+    Fl::reload_scheme();
+    Fl::set_color(FL_SELECTION_COLOR, 200, 200, 200);
+    }
+else {
+    // restore default colors
+    Fl::set_color(FL_BACKGROUND_COLOR, r[0], g[0], b[0]);
+    Fl::set_color(FL_BACKGROUND2_COLOR, r[1], g[1], b[1]);
+    Fl::set_color(FL_FOREGROUND_COLOR, r[2], g[2], b[2]);
+    for (int i = 0; i < FL_NUM_GRAY; i++) {
+        Fl::set_color(fl_gray_ramp(i), r[4 + i], g[4 + i], b[4 + i]);
+        }
+    Fl::reload_scheme();
+    Fl::set_color(FL_SELECTION_COLOR, r[3], g[3], b[3]);
+    }
+
+if (xid != nullptr) {
+    //DWMNCRENDERINGPOLICY ncrp = USE_DARK_MODE ? DWMNCRP_DISABLED : DWMNCRP_ENABLED;     // Enable/disable non-client area rendering on the window.
+    //bool SET_IMMERSIVE_DARK_MODE_SUCCESS = SUCCEEDED(DwmSetWindowAttribute(xid, DWMWA_USE_IMMERSIVE_DARK_MODE, &USE_DARK_MODE, 4));
+    SUCCEEDED(DwmSetWindowAttribute(xid, DWMWA_USE_IMMERSIVE_DARK_MODE, &USE_DARK_MODE, 4));
+    ::UpdateWindow(xid);
+    }} {}
+}
+
+Function {is_light_theme()} {
+  comment {Try to determine if user is using dark theme} return_type bool
+} {
+  code {// based on https://stackoverflow.com/questions/51334674/how-to-detect-windows-10-light-dark-mode-in-win32-application
+
+// The value is expected to be a REG_DWORD, which is a signed 32-bit little-endian
+auto buffer = std::vector<char>(4);
+auto cbData = static_cast<DWORD>(buffer.size() * sizeof(char));
+auto res = RegGetValueW(
+    HKEY_CURRENT_USER,
+    L"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Themes\\\\Personalize",
+    L"AppsUseLightTheme",
+    RRF_RT_REG_DWORD, // expected value type
+    nullptr,
+    buffer.data(),
+    &cbData
+    );
+
+if (res != ERROR_SUCCESS) {
+    throw std::runtime_error("Error: error_code=" + std::to_string(res));
+    }
+
+// convert bytes written to our buffer to an int, assuming little-endian
+auto i = int(buffer[3] << 24 | buffer[2] << 16 | buffer[1] << 8 | buffer[0]);
+
+return i == 1;} {}
+}
+
+comment {>>>>>>>>>>>     HELPER  FUNCTIONS      <<<<<<<<<<<<} {in_source not_in_header
+}
+
+Function {md5(const char* &message, unsigned long len, unsigned long start_pos = 0)} {return_type {std::string}
+} {
+  code {/*
+    used to generate an identity for the image
+    char test[5] = {0, 1, 2, 3, 4};
+    md5((const char*)test, 5); // D05374DC381D9B52806446A71C8E79B1
+
+*/
+unsigned char SHIFT_AMTS[16] = {7, 12, 17, 22, 5,  9, 14, 20, 4, 11, 16, 23, 6, 10, 15, 21};
+unsigned long TABLE_T[64] = { // 64 Entries, 256 Bytes
+    0xD76AA478, 0xE8C7B756, 0x242070DB, 0xC1BDCEEE,
+    0xF57C0FAF, 0x4787C62A, 0xA8304613, 0xFD469501,
+    0x698098D8, 0x8B44F7AF, 0xFFFF5BB1, 0x895CD7BE,
+    0x6B901122, 0xFD987193, 0xA679438E, 0x49B40821,
+    0xF61E2562, 0xC040B340, 0x265E5A51, 0xE9B6C7AA,
+    0xD62F105D, 0x02441453, 0xD8A1E681, 0xE7D3FBC8,
+    0x21E1CDE6, 0xC33707D6, 0xF4D50D87, 0x455A14ED,
+    0xA9E3E905, 0xFCEFA3F8, 0x676F02D9, 0x8D2A4C8A,
+    0xFFFA3942, 0x8771F681, 0x6D9D6122, 0xFDE5380C,
+    0xA4BEEA44, 0x4BDECFA9, 0xF6BB4B60, 0xBEBFBC70,
+    0x289B7EC6, 0xEAA127FA, 0xD4EF3085, 0x04881D05,
+    0xD9D4D039, 0xE6DB99E5, 0x1FA27CF8, 0xC4AC5665,
+    0xF4292244, 0x432AFF97, 0xAB9423A7, 0xFC93A039,
+    0x655B59C3, 0x8F0CCC92, 0xFFEFF47D, 0x85845DD1,
+    0x6FA87E4F, 0xFE2CE6E0, 0xA3014314, 0x4E0811A1,
+    0xF7537E82, 0xBD3AF235, 0x2AD7D2BB, 0xEB86D391
+    };
+unsigned long numBlocks = ((len + 8) >> 6) + 1;
+unsigned long totalen = numBlocks << 6;
+unsigned long* paddingBytes = nullptr;
+unsigned long paddingen = totalen - len;
+if (paddingen > 0) {
+    paddingBytes = new unsigned long[paddingen];
+    paddingBytes[0] = 0x80;
+    for (unsigned long i = 1; i < paddingen; i++) {
+        paddingBytes[i] = 0;
+        }
+    }
+unsigned long messageenBits = len << 3;
+for (unsigned char i = 0; i < 8; i++) {
+    paddingBytes[paddingen - 8 + i] = messageenBits;
+    messageenBits = messageenBits >> 8;
+    }
+unsigned long INIT_A = 0x67452301;
+unsigned long INIT_B = 0xEFCDAB89;
+unsigned long INIT_C = 0x98BADCFE;
+unsigned long INIT_D = 0x10325476;
+unsigned long a = INIT_A;
+unsigned long b = INIT_B;
+unsigned long c = INIT_C;
+unsigned long d = INIT_D;
+unsigned long f = 0;
+unsigned long buffer[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // 16
+unsigned long index = 0;
+unsigned long originalA = INIT_A;
+unsigned long originalB = INIT_B;
+unsigned long originalC = INIT_C;
+unsigned long originalD = INIT_D;
+unsigned char div16 = 0;
+unsigned long bufferIndex = 0;
+unsigned long temp = 0;
+unsigned long temp2 = 0;
+for (unsigned long i = 0; i < numBlocks; i++) {
+    index = i << 6;
+    for (unsigned char j = 0; j < 64; j++) {
+        buffer[j >> 2] = ((index < len ? message[start_pos + index] : paddingBytes[index - len]) << 24) | (buffer[j >> 2] >> 8);
+        index += 1;
+        }
+    originalA = a;
+    originalB = b;
+    originalC = c;
+    originalD = d;
+    for (unsigned char j = 0; j < 64; j++) {
+        div16 = j >> 4;
+        f = 0;
+        bufferIndex = j;
+        switch (div16) {
+            case 0: {
+                f = (b & c) | (~b & d);
+                break;
+                }
+            case 1: {
+                f = (b & d) | (c & ~d);
+                bufferIndex = ((bufferIndex * 5) + 1) & 0x0F;
+                break;
+                }
+            case 2: {
+                f = (b ^ c) ^ d;
+                bufferIndex = ((bufferIndex * 3) + 5) & 0x0F;
+                break;
+                }
+            case 3: {
+                f = c ^ (b | ~d);
+                bufferIndex = (bufferIndex * 7) & 0x0F;
+                break;
+                }
+            }
+        temp2 = SHIFT_AMTS[(div16 << 2) | (j & 3)];
+        temp = a + f + buffer[bufferIndex] + TABLE_T[j];
+        temp = b + ((temp << temp2) | ((temp >> (32 - temp2)) & ((1 << temp2) - 1)));
+        a = d;
+        d = c;
+        c = b;
+        b = temp;
+        }
+    a += originalA;
+    b += originalB;
+    c += originalC;
+    d += originalD;
+    }
+if (paddingBytes != nullptr) {delete[] paddingBytes;}
+unsigned long result[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // 16
+unsigned char count = 0;
+unsigned long n = 0;
+for (unsigned char i = 0; i < 4; i++) {
+    switch (i) {
+        case 0: n = a; break;
+        case 1: n = b; break;
+        case 2: n = c; break;
+        case 3: n = d; break;
+        }
+    for (unsigned char j = 0; j < 4; j++) {
+        result[count++] = n & 0xFF;
+        n = n >> 8;
+        }
+    }
+std::string md5str = "";
+for (unsigned char i = 0; i < 16; i++) {
+    md5str += n2hexstr(result[i], 2);
+    }
+//std::cout << "RESULT: \\t" << md5str << std::endl;
+return md5str;} {}
+}
+
+Function {getDelimitedTags(std::string str, bool culltag = false, bool sorttags = false)} {private return_type {std::vector<std::string>}
+} {
+  code {std::vector<std::string> tags = split(str, ",");
+unsigned int num_tags = tags.size();
+for (unsigned int i = 0; i < num_tags; i++) {
+    tags.at(i) = tolower(trim(trim(tags.at(i), " "), "\\t"));
+    }
+if (sorttags) {std::sort(tags.begin(), tags.end());}
+if (culltag) {
+    std::vector<std::string> tmp;
+    for (unsigned int i = 0; i < num_tags; i++) {
+        if (std::find(tags.begin(), tags.end(), tmp.at(i)) == tags.end()) {
+            tmp.push_back(tags.at(i));
+            }
+        }
+    return tmp;
+    }
+return tags;} {}
+}
+
+Function {redraw_ui()} {private return_type void
+} {
+  code {// Redraw all Widgets, FLTK doesn't properly refresh when images are loaded
+win_main->redraw();
+mnu_bar->redraw();
+tile_info->redraw();} {}
+}
+
+Function {isSelectionValid(bool checkDB = false)} {return_type bool
+} {
+  code {if (sel_file > -1) {
+    if (filesW.size() > 0 && sel_file < (signed)filesW.size()) {
+        if (checkDB) {
+            if (settings != nullptr && settings->image.size() > 0 && sel_file < (signed)settings->image.size()) {
+                return true;
+                }
+            return false;
+            }
+        return true;
+        }
+    }
+return false;} {}
+}
+
+Function {img_origin()} {private return_type void
+} {
+  code {// Updates Origin
+imgorg[0] = Fl::event_x(); imgorg[1] = Fl::event_y();
+if (debug) {std::cout << "ORG: \\t[" << imgorg[0] << ", " << imgorg[1] << "]" << std::endl;}} {}
+}
+
+Function {img_move()} {private return_type void
+} {
+  code {// Calculate relative offset from the last mouse click (origin point) to the current point
+if (debug) {std::cout << "Pos: \\t[" << imgpos[0] << ", " << imgpos[1] << "]" << std::endl;}
+imgpos[0] += (Fl::event_x() - imgorg[0]);
+imgpos[1] += (Fl::event_y() - imgorg[1]);
+
+// Origin becomes the current mouse point
+img_origin();
+
+// Update position of image
+shp_image->position(imgpos[0], imgpos[1] );
+
+// Redraw all Widgets to avoid artifacts
+redraw_ui();} {}
+}
+
+Function {img_restore()} {private return_type void
+} {
+  code {//create_tag_button("");
+// Calculate center of widget area to position image
+imgpos[0] = tile_view->x() + (tile_view->w() / 2) - (shp_image->w() / 2);
+imgpos[1] = tile_view->y() + (tile_view->h() / 2) - (shp_image->h() / 2);
+
+// Update origin
+img_origin();
+
+// Update Image position (should now be in the center)
+shp_image->position(imgpos[0], imgpos[1] );
+shp_image->redraw();
+redraw_ui();} {}
+}
+
+Function {img_resize()} {private return_type void
+} {
+  code {// get min / max of the image
+unsigned int img_max = imgbuf->w();
+unsigned int img_min = imgbuf->h();
+if ((unsigned int)imgbuf->h() > img_max) {
+    img_max = imgbuf->h();
+    img_min = imgbuf->w();
+    }
+
+// get min / max of the canvas widget
+unsigned int wid_max = tile_view->w();
+unsigned int wid_min = tile_view->h();
+if ((unsigned int)tile_view->h() > wid_max) {
+    wid_max = tile_view->h();
+    wid_min = tile_view->w();
+    }
+
+
+// Calculate Zoom ratio
+if ((float)imgbuf->w() / (float)imgbuf->h() > 1.0f) {
+    // Image is more Horizontial
+    imgzoom = (float)wid_min / (float)img_min;
+    }
+else {
+    // image is more Vertial
+    imgzoom = (float)wid_min / (float)img_max;
+    }
+
+// check zoom flag
+if (bit::get(imgfit, 2) == false && imgzoom < 1.0f) {imgzoom = 1.0f;} // shrink to fit
+if (bit::get(imgfit, 3) == false && imgzoom > 1.0f) {imgzoom = 1.0f;} // enlarge to fit} {}
+}
+
+Function {img_rescale()} {private return_type void
+} {
+  code {// Scale Width, Height
+int rsize_w = (int)((float)imgbuf->w() * imgzoom);
+int rsize_h = (int)((float)imgbuf->h() * imgzoom);
+
+// Scale Image
+if (imgtmp != nullptr) {delete imgtmp; imgtmp = nullptr;}
+imgtmp = imgbuf->copy( rsize_w, rsize_h );
+size_t errMsgLen= 0;
+char* errMsg = nullptr;
+switch ( imgtmp->fail() ) {
+    case Fl_Image::ERR_NO_IMAGE:
+    case Fl_Image::ERR_FILE_ACCESS: {
+        strerror_s(errMsg, errMsgLen, errno);
+        fl_alert("%s: %s", "FLIE", errMsg); break;
+
+
+        if (errMsg != nullptr) {
+            delete errMsg;
+            }
+
+        }
+    case Fl_Image::ERR_FORMAT: {fl_alert("%s: couldn't decode image", "FILE"); break;}
+    }
+
+std::string info = to_string((int)(imgzoom * 100)) + "%";
+lb_zoom->value(info.c_str());
+
+// Render Image
+shp_image->image( imgtmp );
+//shp_image->redraw();} {}
+}
+
+Function {img_scale()} {private return_type void
+} {
+  code {// bail if zoom is locked
+if (bit::get(imgfit, 1)) {return;}
+
+// Default Scale Increment
+float inc = 0.05f;
+
+// Increment Zoom Ratio by increment amount
+float oldzoom = imgzoom;
+if (Fl::event_dy() < 0) {imgzoom += inc;} else {imgzoom -= inc;}
+
+// Scale Width, Height
+int rsize_w = (signed int)((float)imgbuf->w() * imgzoom);
+int rsize_h = (signed int)((float)imgbuf->h() * imgzoom);
+
+
+if (rsize_w < 1 || rsize_h < 1 || rsize_w < imgmin_limit || rsize_h < imgmin_limit || rsize_w > imgmax_limit || rsize_h > imgmax_limit) {
+    imgzoom = (float)oldzoom;
+    return;
+    }
+
+/*
+    I'm having issues with images crashing when resized...
+    memory allocation error ??
+
+    I'm not sure how to properly deal with this
+    so I'm just going to cap the zoom
+*/
+if (imgzoom < 0.1f) {
+    imgzoom = 0.1f;
+    }
+else if (imgzoom > 2.0f) {imgzoom = 2.0f;}
+
+
+
+// Calculate Pitch
+//int rsize_p = rsize_w * rsize_h;
+
+// Use Copy to Rescale Image
+if (imgtmp != nullptr) {delete imgtmp; imgtmp = nullptr;}
+imgtmp = imgbuf->copy( rsize_w, rsize_h );
+char* errMsg = nullptr;
+size_t errMsgLen = 0;
+// Check for Image loading errors? doesn't prevent crashing though.. so huh... whats the point?
+switch ( imgtmp->fail() ) {
+    case Fl_Image::ERR_NO_IMAGE:
+    case Fl_Image::ERR_FILE_ACCESS: {
+        strerror_s(errMsg, errMsgLen, errno);
+        fl_alert("%s: %s", "FLIE", errMsg); break;
+        if (errMsg != nullptr) {
+            delete errMsg;
+            }
+        }
+    case Fl_Image::ERR_FORMAT: {fl_alert("%s: couldn't decode image", "FILE"); break;}
+    }
+
+// Update Status bar information
+std::string info = to_string((int)(imgzoom * 100)) + "%";
+lb_zoom->value(info.c_str());
+
+// Render Image
+shp_image->image( imgtmp );
+shp_image->redraw();
+redraw_ui();} {}
+}
+
+Function {tags_btn_update(Fl_Widget* o, void* userdata)} {private return_type void
+} {
+  code {// Set Write Flag
+if (bit::get(write_txt, 2) == false) {write_txt = bit::set(write_txt, 2, true);}
+
+const char* sp = static_cast<char*>(userdata);
+
+std::string tags_text = textbuf->text();
+//std::cout << "TextBuffer: \\t" << tags_text << std::endl;
+Fl_Light_Button* lbtn = (Fl_Light_Button*)o;
+
+bool state = (bool)lbtn->value();
+if (state) {
+    tags_text+=", " + std::string(sp);
+    }
+else {
+    std::string tmp = std::string(sp);
+    unsigned int x = tags_text.find(tmp);
+    if (x != std::string::npos) {
+        tags_text.erase(x, tmp.size());
+        }
+    }
+
+std::vector<std::string> ss = split(tags_text, ",");
+unsigned int num_split_tags = ss.size();
+for (unsigned int i = 0; i < num_split_tags; i++) {
+    ss.at(i) = trim(ss.at(i), " ");
+    ss.at(i) = trim(ss.at(i), "\\t");
+    ss.at(i) = tolower(ss.at(i));
+    }
+if (num_split_tags > 0) {std::sort(ss.begin(), ss.end());}
+
+std::vector<std::string> descret_tags;
+for (unsigned int i = 0; i < num_split_tags; i++) {
+    ss.at(i) = trim(ss.at(i), " ");
+    ss.at(i) = trim(ss.at(i), "\\t");
+    if (ss.at(i).size() == 0) {continue;}
+    ss.at(i) = tolower(ss.at(i));
+    descret_tags.push_back(ss.at(i));
+    }
+tags_text = "";
+num_split_tags = descret_tags.size();
+for (unsigned int i = 0; i < num_split_tags; i++) {
+    tags_text += descret_tags.at(i);
+    if (i + 1 < num_split_tags) {
+        tags_text += ", ";
+        }
+    }
+textbuf->text(tags_text.c_str());
+edt_sdtags->redraw();} {}
+}
+
+Function {create_tag_button(std::string tag_name = "")} {private return_type void
+} {
+  code {unsigned int tag_width = 80;
+unsigned int tag_height = 20;
+unsigned int tag_padding = 2;
+unsigned int num_tagbtns = tag_sidebar_pack->children();
+
+if (tag_name.size() == 0) {
+    tag_name = "Button" + to_string(num_tagbtns + 1);
+    }
+
+Fl_Light_Button* lbtn = (
+    new Fl_Light_Button(
+        tag_sidebar_pack->x(),
+        tag_sidebar_pack->y() + (num_tagbtns * (tag_height + tag_padding)),
+        tag_width, tag_height,
+        tag_name.c_str()
+        )
+    );
+lbtn->box(FL_NO_BOX);
+lbtn->labelfont(5);
+lbtn->copy_label(tag_name.c_str());
+lbtn->callback((Fl_Callback*)tags_btn_update, (void*)lbtn->label());
+tag_sidebar_pack->add(lbtn);} {}
+}
+
+Function {update_tag_buttons(std::vector<std::string> &tags_in_folder)} {private return_type void
+} {
+  code {unsigned int num_tag_btns = tag_sidebar_pack->children();
+if (num_tag_btns > 0) {
+    Fl_Widget* lbtn;
+    for (unsigned int i = num_tag_btns; i --> 0; ) {
+        lbtn = tag_sidebar_pack->child(i); // Returns Pointer from Object
+        tag_sidebar_pack->remove(i); // Remove Widget
+        settings->remove(i);
+        delete lbtn; // Delete Widget Object
+        }
+    }
+num_tag_btns = tags_in_folder.size();
+if (num_tag_btns > 0) {
+    std::sort(tags_in_folder.begin(), tags_in_folder.end());
+    }
+for (unsigned int i = 0; i < num_tag_btns; i++) {
+    create_tag_button(tags_in_folder.at(i));
+    }} {}
+}
+
+Function {save_txt()} {private return_type void
+} {
+  code {// check that image selection from directory is valid
+if (!isSelectionValid()) {
+	std::cout << "error failed to save sel_file out of bounts [" << sel_file << ": " << filesW.size() << "]" << std::endl;
+	return;
+	}
+
+// check that the save flags are enabled
+if (bit::get(write_txt, 1) && bit::get(write_txt, 2)) {
+
+	// create a char buffer and write it to a file
+	bytestream s;
+	s.writeFileW (
+		getFilename::PathW(filesW.at(sel_file)) + getFilename::FileW(filesW.at(sel_file)) + L".txt",
+		0,
+		strlen(textbuf->text()),
+		textbuf->text()
+		);
+
+	// append the tags to array
+	std::vector<std::string> global_tags;
+	unsigned int num_tags = tag_sidebar_pack->children();
+	Fl_Light_Button* lbtn;
+	if (num_tags > 0) {
+		global_tags = std::vector<std::string>(num_tags);
+		for (unsigned int i = 0; i < num_tags; i++) {
+			lbtn = (Fl_Light_Button*)tag_sidebar_pack->child(i);
+			global_tags.at(i) = std::string(lbtn->label());
+			}
+		}
+
+	// split the tags in the text
+	std::vector<std::string> tmp = split(std::string(textbuf->text()), ",");
+
+
+
+	// add unique tags to array
+	//db.image(sel_file).tags = tmp;
+
+	// check for changes
+	if (global_tags.size() > num_tags) {
+
+		//updates tag list
+		update_tag_buttons(global_tags);
+		}
+	}
+
+
+// check that the save flags are enabled for regions
+//std::cout << "CSV WRite: \\t" << bit::get(write_txt, 3) << std::endl;
+//std::cout << "CSV Update: \\t" << bit::get(write_txt, 4) << std::endl;
+if (settings->image.at(sel_file).region.size() > 0 && bit::get(write_txt, 3) && bit::get(write_txt, 4)) {
+	std::string csvfile = unicode_to_utf8(filesW.at(sel_file));
+	settings->writeCSV(getFilename::Path(csvfile) + getFilename::File(csvfile) + ".csv", sel_file);
+	}} {}
+}
+
+Function {clear_image()} {return_type void
+} {
+  code {shp_image->image(nullptr);
+shp_image->color(Fl_Color(0));
+shp_image->redraw();
+
+if (imgbuf != nullptr) {delete imgbuf; imgbuf = nullptr;}
+if (imgtmp != nullptr) {delete imgtmp; imgtmp = nullptr;}
+
+// Destroy any existing regions
+unsigned int num_regions = shp_image->children();
+if (num_regions > 0) {
+	Fl_Widget* boxregion;
+	for (int i = num_regions; i --> 0; ) {
+		boxregion = shp_image->child(i); // Returns Pointer from Object
+		shp_image->remove(i); // Remove Widget
+		settings->remove(i); // remove from database
+		delete boxregion; // Delete Widget Object
+		}
+	shp_image->redraw();
+	}
+
+// restore zoom to default
+imgzoom = 1.0f;
+
+// set write state of the text to false
+write_txt = bit::set(write_txt, 2, false);
+write_txt = bit::set(write_txt, 4, false);
+
+// clear text buffer
+textbuf->text("");} {}
+}
+
+Function {readDimFromImage(std::wstring file, unsigned int &width, unsigned int &height)} {private return_type void
+} {
+  code {width = 0; height = 0;
+std::wstring fext = toLowerW(getFilename::TypeW(file));
+if (fext == L".png") {
+	bytestream f;
+	if (f.openFileW(file)) {
+		size_t fsize = f.size;
+		if (fsize > 32) {
+			size_t pos = 0;
+			uint32_t csize = f.readUlong();
+			uint32_t type = f.readUlong();
+			if (csize == 0x474E5089 && type == 0x0A1A0A0D) {
+			while (f.tell() < fsize) {
+			csize = f.readUlong();
+			type = f.readUlong();
+			pos = f.tell();
+			if (type == 0x52444849) { // IHDR
+			  width = bit::swapBytes(bit::swapBytes(f.readUlong(), 1, 4), 2, 3);
+			  height = bit::swapBytes(bit::swapBytes(f.readUlong(), 1, 4), 2, 3);
+			  break;
+			  }
+			f.seek(pos + bit::swapBytes(bit::swapBytes(csize, 1, 4), 2, 3));
+			}
+			} else {std::cout << "invalid header\\n";}
+			} else {std::cout << "invalid png\\n";}
+		f.close();
+		} else {std::wcout << L"failed to open file {" << file << L"}\\n";}
+	}
+else if (fext == L".jpg" || fext == L".jpeg") {
+	bytestream f;
+	if (f.openFileW(file)) {
+		size_t fsize = f.size;
+		uint16_t type = f.readUshort();
+		if (type == 0xD8FF) { // SOI, Start of Image
+			// Scan miscellaneous markers until we reach SOF0 marker {0xC0}
+			size_t pos = 0;
+			unsigned int len = 0;
+			bool stop = false;
+			while (stop == false && f.tell() < fsize) {
+				type = f.readUshort();
+				switch (type) {
+					case 0xFEFF: {f.seek(bit::swapBytes(f.readUshort(), 1, 2) - 2, seek::cur); break;} // COM, Comment
+					case 0xD9FF: {stop = true; break;} // EOI, End of Image
+					case 0x0DFF: {continue;} // RST0, Restart
+					case 0x1DFF: {continue;} // RST1, Restart
+					case 0x2DFF: {continue;} // RST2, Restart
+					case 0x3DFF: {continue;} // RST3, Restart
+					case 0x4DFF: {continue;} // RST4, Restart
+					case 0x5DFF: {continue;} // RST5, Restart
+					case 0x6DFF: {continue;} // RST6, Restart
+					case 0x7DFF: {continue;} // RST7, Restart
+					case 0xDAFF: {f.seek(bit::swapBytes(f.readUshort(), 1, 2) - 2, seek::cur); break;} // SOS, Start of Scan
+					case 0xDDFF: {f.seek(4, seek::cur); break;} // DRI, Define Restart Interval
+					case 0xC4FF: {f.seek(bit::swapBytes(f.readUshort(), 1, 2) - 2, seek::cur); break;} // DHT, Define Huffman Tables
+					case 0xDBFF: {f.seek(bit::swapBytes(f.readUshort(), 1, 2) - 2, seek::cur); break;} // DQT, Define Quantization Tables
+					case 0xC0FF: { // S0F0, Start of Frame
+						// this contains the image width and height
+						pos = f.tell();
+						len = bit::swapBytes(f.readUshort(), 1, 2);
+						f.seek(1, seek::cur);
+						height = bit::swapBytes(f.readUshort(), 1, 2);
+						width = bit::swapBytes(f.readUshort(), 1, 2);
+						f.seek(pos + len);
+						stop = true; break;
+						}
+					case 0xC2FF: { // S0F2, Start of Frame
+						// this contains the image width and height
+						pos = f.tell();
+						len = bit::swapBytes(f.readUshort(), 1, 2);
+						f.seek(1, seek::cur);
+						height = bit::swapBytes(f.readUshort(), 1, 2);
+						width = bit::swapBytes(f.readUshort(), 1, 2);
+						f.seek(pos + len);
+						stop = true; break;
+						}
+					default: {
+						if ((type & 0xF0FF) == 0xE0FF) { // APPn, Application specific
+							f.seek(bit::swapBytes(f.readUshort(), 1, 2) - 2, seek::cur);
+							}
+						}
+					}
+				}
+			} else {std::cout << "Invalif JPEG Header\\n";}
+		f.close();
+		} else {std::wcout << L"failed to open {" << file << L"}\\n";}
+	}
+else if (fext == L".bmp") {
+	bytestream f;
+	if (f.openFileW(file)) {
+		size_t fsize = f.size;
+		if (fsize > 18) {
+			uint16_t type = f.readUshort();
+			if (type == 0x4D42) {
+				f.seek(14);
+				if (f.readUlong() == 40) {
+					width = f.readUlong();
+					height = f.readUlong();
+					} else {std::cout << "not a windows BMP\\n";}
+				} else {std::cout << "Invalif BMP Header {" << type << "}\\n";}
+			} else {std::cout << "Invalid Header Size\\n";}
+		f.close();
+		} else {std::wcout << L"failed to open {" << file << L"}\\n";}
+	}
+else {std::wcout << L"unsupported file type {" << fext << L"}\\n";}} {}
+}
+
+Function {readTagsFromFile(std::wstring txt_file, std::vector<std::string> &tags, bool cullDuplicates = true)} {private return_type void
+} {
+  code {if (os::doesFileExistW(txt_file)) {
+    bytestream o;
+    if (o.openFileW(txt_file)) {
+        std::string str;
+        std::vector<std::string> tmp;
+        unsigned int tmpn;
+        while (!o.eos()) {
+            str = trim(o.readline());
+            if (str.size() == 0) {continue;}
+            tmp = split(str, ",");
+            tmpn = tmp.size();
+            for (unsigned int j = 0; j < tmpn; j++) {
+                tmp.at(j) = trim(tmp.at(j), " ");
+                tmp.at(j) = trim(tmp.at(j), "\\t");
+                tmp.at(j) = tolower(tmp.at(j));
+                if (cullDuplicates) {
+                    if (std::find(tags.begin(), tags.end(), tmp.at(j)) == tags.end()) {
+                        tags.push_back(tmp.at(j));
+                        }
+                    } else {tags.push_back(tmp.at(j));}
+                }
+            }
+        o.close();
+        }
+    }} {}
+}
+
+Function {writeTagsToFile(std::wstring file, std::vector<std::string> &tags)} {private return_type void
+} {
+  code {unsigned int c = tags.size();
+if (file.size() == 0 || c == 0) {return;}
+std::sort(tags.begin(), tags.end());
+std::string txtfile = "";
+for (unsigned int i = 0; i < c; i++) {
+	if (tags.at(i).size() == 0) {continue;}
+	txtfile += tags.at(i);
+	if (i + 1 < c) {txtfile += ", ";}
+	}
+if ((c = txtfile.size()) == 0) {return;}
+bytestream s;
+s.writeFileW(file, 0, c, (char*)txtfile.c_str());} {}
+}
+
+Function {moveTagsFromPath(std::wstring fpath, std::string tag)} {private return_type void
+} {
+  code {/*
+    move files into a new folder based on a given tag or tags
+*/
+
+if (!os::doesFileExistW(fpath)) {
+    std::cout << "invalid file path\\n";
+    return;
+    }
+
+// Check tag request is valid
+if (tag.size() == 0) {std::cout << "no tag given\\n"; return;}
+
+// check tag for commas, and delimit them into an array
+std::vector<std::string> ss = getDelimitedTags(tag, false, false);
+
+// get tag count
+unsigned int sc = ss.size();
+
+// clean up the tags
+for (unsigned int i = 0; i < sc; i++) {ss.at(i) = tolower(trim(trim(ss.at(i), " "), "\\t"));}
+
+// locate text files to inspect
+std::vector<std::wstring> files = os::getFilesW(fpath + L"*.txt");
+unsigned int num_txt_files = files.size();
+
+// check each tag text file
+std::vector<std::string> tags;
+std::wstring folder;
+bool doMove = false;
+signed int x = 0;
+unsigned int c = 0;
+std::wstring fext;
+std::wstring newfile;
+std::vector<std::wstring> createdFolders;
+for (unsigned int j = 0; j < num_txt_files; j++) {
+
+    // set default action to NOT move the file
+    doMove = false;
+
+    // Read tags from text file
+    tags.clear();
+    readTagsFromFile(files.at(j), tags, false);
+
+    // for each tag searchable, check text file's tags
+    for (unsigned int i = 0; i < sc; i++) {
+        // do a search for tag
+        x = findItem(tags, ss.at(i));
+        if (x > -1) {
+            // change move flag to true
+            doMove = true;
+            break;
+            }
+        }
+
+    // if move flag true, then move file
+    if (doMove) {
+
+        // create new export folder
+        folder = fpath + string_to_wstring(tag) + L"\\\\";
+
+        x = findItem<std::wstring>(createdFolders, folder);
+        if (x == -1) {
+            // create folder if not already made
+            if (!os::doesFileExistW(folder)) {
+                os::makeDirW(folder);
+                }
+
+            createdFolders.push_back(folder);
+            }
+
+
+        // move files
+        for (unsigned int k = 0; k < num_img_types; k++) {
+
+            // make filepath to new folder
+            newfile = (getFilename::FileW(files.at(j))) + knownTypes[k];
+
+            // skip if no file found
+            if (!os::doesFileExistW(fpath + newfile)) {continue;}
+
+            // move file
+            os::moveFileW(fpath + newfile, folder + newfile); // move text file
+
+            // update files array
+            x = findItem<std::wstring>(filesW, fpath + newfile);
+            if (x > -1) {filesW.at(x) = folder + newfile;}
+
+            // count how many things moved
+            c++;
+
+            }
+        }
+    }
+
+// if any ones moved, inform user of how many were moved
+if (c > 0) {
+    //fl_choice((to_string(c) + " files moved under " + tag).c_str(), "OK", 0, 0);
+    //os::openPathW(fpath);
+    }} {}
+}
+
+Function {removeTagsFromPath(std::wstring fpath, std::string str, bool doReverse = false)} {private return_type void
+} {
+  code {// Check tag request is valid
+if (str.size() == 0) {std::cout << "no tag given\\n"; return;}
+
+// split the tags if there is a comma
+std::vector<std::string> ss = getDelimitedTags(str, false, false);
+unsigned int num_tags = ss.size();
+if (num_tags == 0) {return;}
+
+// clean up tags, remove white space etc
+for (unsigned int i = 0; i < num_tags; i++) {
+    ss.at(i) = tolower(trim(trim(ss.at(i), " "), "\\t"));
+    }
+
+// cross reference text files in the folder with the tags
+std::vector<std::string> tags;
+std::vector<std::wstring> files = os::getFilesW(fpath + L"*.txt");
+unsigned int num_files = files.size();
+bool doWrite = false;
+std::vector<bool> delList;
+unsigned int c = 0;
+for (unsigned int j = 0; j < num_files; j++) {
+
+    // set default state to NOT write
+    doWrite = false;
+
+    // read tags from each text file
+    tags.clear();
+    readTagsFromFile(files.at(j), tags, true);
+
+    // skip if the text file was empty
+    c = tags.size();
+    if (c == 0) {continue;}
+
+    // cross reference tags to text files
+    delList.clear();
+    delList = std::vector<bool>(c);
+    for (unsigned int i = 0; i < c; i++) {
+        delList.at(i) = true;
+
+        if (doReverse) {
+            if (findItem<std::string>(ss, tags.at(i)) < 0) {
+                delList.at(i) = false;
+                doWrite = true;
+                }
+            }
+        else {
+            if (findItem<std::string>(ss, tags.at(i)) > -1) {
+                delList.at(i) = false;
+                doWrite = true;
+                }
+            }
+        }
+    if (doWrite) {
+        for (int i = c; i --> 0; ) {
+            if (!delList.at(i)) {
+                deleteItem(tags, i);
+                }
+            }
+        writeTagsToFile(files.at(j), tags);
+        }
+    }} {}
+}
+
+Function {addTagsToPath(std::wstring fpath, std::string str)} {private return_type void
+} {
+  code {if (str.size() == 0) {return;}
+
+// Delimit Tags to Add
+std::vector<std::string> tags = getDelimitedTags(str, false, false);
+unsigned int num_tags = tags.size();
+
+// Collect Text Files From Path
+std::vector<std::wstring> files = os::getFilesW(fpath + L"*.txt");
+unsigned int num_files = files.size();
+
+// Open each text
+signed int x = 0;
+std::vector<std::string> txttags;
+for (unsigned int j = 0; j < num_files; j++) {
+
+    // read Tags from text file
+    txttags.clear();
+    readTagsFromFile(files.at(j), txttags, false);
+
+    // check if amendments are required
+    for (unsigned int i = 0; i < num_tags; i++) {
+        x = findItem(txttags, tags.at(i));
+
+        // needs to be amended
+        if (x == -1) {
+            txttags.push_back(tags.at(i));
+            }
+        }
+
+    // flush any changes back to the text
+    if (txttags.size() > 0) {
+        writeTagsToFile(files.at(j), txttags); // sorting happens inside the function
+        }
+    }} {}
+}
+
+Function {ReplaceTagsInPath(std::wstring fpath, std::string strFind, std::string strReplacement)} {private return_type void
+} {
+  code {if (fpath.size() == 0 || strFind.size() == 0) {return;}
+
+// Collect Text Files From Path
+std::vector<std::wstring> files = os::getFilesW(fpath + L"*.txt");
+unsigned int num_files = files.size();
+
+// Open each text
+signed int x = 0;
+std::vector<std::string> txttags;
+for (unsigned int j = 0; j < num_files; j++) {
+
+    // read Tags from text file
+    txttags.clear();
+    readTagsFromFile(files.at(j), txttags, false);
+
+    for (unsigned int b = 0; b < txttags.size(); b++) {
+        std::cout << "Tag" << b << ": \\t(" << txttags.at(b) << ")" << std::endl;
+        }
+
+
+    // check if amendments are required
+    x = findItem(txttags, strFind);
+
+    // needs to be amended
+    if (x > -1) {
+        txttags.at(x) = strReplacement;
+        // flush any changes back to the text
+        writeTagsToFile(files.at(j), txttags); // sorting happens inside the function
+        }
+    }} {}
+}
+
+Function {overwriteTagsInPath(std::wstring fpath, std::string str)} {private return_type void
+} {
+  code {str = trim(str, " ");
+if (str.size() == 0) {return;}
+std::wstring fext = L"";
+std::vector<std::wstring> files = os::getFilesW(fpath + L"*.*");
+unsigned int num_files = files.size();
+bool halt = false;
+bytestream s;
+for (unsigned int i = 0; i < num_files; i++) {
+    fext = toLowerW(getFilename::TypeW(files.at(i)));
+    if (fext.size() < 3) {continue;}
+    halt = true;
+    for (unsigned int j = 0; j < 4; j++) {
+        if (knownTypes[j].find(fext) != std::wstring::npos) {
+            halt = false;
+            break;
+            }
+        }
+    if (halt) {continue;}
+    s.writeFileW(fpath + getFilename::FileW(files.at(i)) + L".txt", 0, str.size(), (char*)str.c_str());
+    }} {}
+}
+
+Function {binMaps(std::wstring fpath)} {private return_type void
+} {
+  code {/*
+    reads each image and distributes them into
+    their own folder based on their dimensions
+
+    update,
+    replaced openBitMap with readDimFromJPG,
+    openBitMap uses too much memory
+*/
+
+// Copy currently open file
+bool reloadFile = false;
+if (isSelectionValid()) {
+    save_txt();
+    }
+
+
+
+std::vector<std::wstring> files = os::getFilesW(fpath + L"*.*");
+unsigned int num_files = files.size();
+std::vector<unsigned int> aspects;
+std::vector<std::string> folders;
+signed int x = 1;
+unsigned int width = 0;
+unsigned int height = 0;
+unsigned int a = 0;
+std::string n = "";
+unsigned int rw = 0;
+unsigned int rh = 0;
+float d = 2.0f;
+unsigned int twidth;
+unsigned int theight;
+float tw;
+float th;
+float tl = 1.0f;
+unsigned int c;
+float tol = 0.05f;
+bool halt = false;
+std::wstring fext;
+std::wstring newfile;
+std::wstring filesearch;
+for (unsigned int j = 0; j < num_files; j++) {
+
+    if (files.at(j) == L"." || files.at(j) == L"..") {continue;}
+
+    // check that the image is of a supported file type
+    fext = toLowerW(getFilename::TypeW(files.at(j)));
+    halt = true;
+    for (unsigned int i = 0; i < 4; i++) {
+        if (fext == knownTypes[i]) {
+            halt = false;
+            break;
+            }
+        }
+
+    // skip if file isn't supported
+    if (halt) {
+        //std::wcout << "halted " <<  files.at(j) << std::endl;
+        continue;
+        }
+
+    // skip file if file was already moved
+    if (!os::doesFileExistW(files.at(j))) {
+        //std::wcout << "cant finf ggile " <<  files.at(j) << std::endl;
+        continue;
+        }
+
+
+    // read the iamge's dimensions
+
+    readDimFromImage(files.at(j), width, height); // could replace this with FLTK's native image reader
+
+    if (width <= 0 || height <= 0) {
+        //std::cout << "incorrect dim\\n";
+        return;
+        }
+
+    // calculate image's aspect ratio
+    d = 2.0f;
+    twidth = ((unsigned int)(width / 2.0)) * 2;
+    theight = ((unsigned int)(height / 2.0)) * 2;
+    tw = (float)width;
+    th = (float)height;
+    rw = tw;
+    th = th;
+    c = 1;
+    while (tw >= tl && th >= tl) {
+        tw = twidth / (c * d);
+        th = theight / (c * d);
+        if ((tw - ((float)((unsigned int)tw))) <= tol && (th - ((float)((unsigned int)th))) <= tol) {
+            rw = tw;
+            rh = th;
+            }
+        c++;
+        }
+
+    // check the image dimensions are valid
+    if (rw > 0 && rh > 0) {
+
+        // check if aspect ratio is new
+        a = (unsigned int)(((float)rw / (float)rh) * 1000);
+        x = findItem(aspects, a);
+
+        // add new entry
+        if (x == -1) {
+
+            // create a new folder if needed
+            n = to_string(rw) + " x " + to_string(rh);
+            if (!os::doesFileExistW(fpath + string_to_wstring(n) + L"\\\\")) {
+                os::makeDirW(fpath + string_to_wstring(n) + L"\\\\");
+                }
+
+            // append data
+            x = aspects.size();
+            folders.push_back(n);
+            aspects.push_back(a);
+            }
+
+        // create destination path
+        newfile = fpath + string_to_wstring(folders[x]) + L"\\\\" + getFilename::FileW(files.at(j));
+        filesearch = fpath + getFilename::FileW(files.at(j));
+
+        // search known types and move them
+        for (unsigned int k = 0; k < num_img_types; k++) {
+
+            if (!os::doesFileExistW(filesearch + knownTypes[k])) {
+                //std::wcout << L"Fail, cant find file: \\t" << filesearch << knownTypes[k] << std::endl;
+                continue;
+                }
+
+            // move file to the given location
+            os::moveFileW(filesearch + knownTypes[k], newfile + knownTypes[k]);
+
+
+            // check if the file is one of the currently opened files
+            x = findItem<std::wstring>(filesW, filesearch + knownTypes[k]);
+
+            // update file names
+            if (x > -1) {
+                filesW.at(x) = newfile + knownTypes[k];
+                if (x == sel_file) {reloadFile = true;}
+                // set flag to reload later
+                //if (!reloadFiles) {reloadFiles = true;}
+                }
+            }
+        }
+    //else {std::cout << "invalid img dim\\n";}
+    }
+
+// check the files should be reloaded
+if (reloadFile && num_files > 0) {
+
+    // restart by re-opening file
+    read_image(unicode_to_utf8(files.at(sel_file)));
+    }} {}
+}
+
+Function {renameDataset(std::wstring fpath, std::string prefix = "")} {private return_type void
+} {
+  code {// check given path is valid
+if (fpath.size() == 0 || !os::doesFileExistW(fpath)) {
+    std::cout << "path empty" << std::endl;
+    return;
+    }
+
+// get files in given folder
+std::vector<std::wstring> files = os::getFilesW(fpath + L"*.*");
+unsigned int num_files = files.size();
+
+// count the number of digits from the files count
+unsigned int d = (to_string(num_files)).size();
+
+// sort files
+//std::sort(files.begin(), files.end());
+
+// Copy currently open file
+if (isSelectionValid()) {
+
+    // save changes
+    save_txt();
+    }
+
+// rename files
+std::wstring fext = L"";
+
+
+std::string fname = "";
+std::string n = "";
+std::wstring str;
+bool halt = false;
+signed int x;
+std::vector<std::wstring> filesRen;
+std::wstring fnamew;
+std::wstring newfile;
+for (unsigned int i = 0; i < num_files; i++) {
+
+    // some times the return is three dots? skip if this happens
+    if (files.at(i).size() < 4) {continue;}
+
+    // get files extension
+    fext = toLowerW(getFilename::TypeW(files.at(i)));
+
+    // set skip state to true
+    halt = true;
+
+    // test for known file types
+    for (unsigned int j = 0; j < num_img_types; j++) {
+        if (knownTypes[j].find(fext) != std::wstring::npos) {
+            halt = false;
+            break;
+            }
+        }
+
+    // skip if file type is not supported
+    if (halt) {continue;}
+
+    // get base name
+    fnamew = getFilename::FileW(files.at(i));
+
+    // get index
+    x = findItem<std::wstring>(filesRen, fnamew);
+    if (x == -1) {
+        x = filesRen.size();
+        filesRen.push_back(fnamew);
+        }
+
+    // create a serilized name
+    fname = prefix + " " + padString(to_string(x), d, "0", true);
+    newfile = fpath + string_to_wstring(fname) + fext;
+
+
+    // rename it
+    os::renameFileW(files.at(i), newfile);
+
+    // check if the file is already open
+    x = findItem<std::wstring>(filesW, files.at(i));
+
+    // update filename
+    if (x > -1 ) {
+
+        // don't need to reload anything, just rename the UI info for the currently open file
+        if (x == sel_file) {
+
+            // convert wchar to char
+            fname = wstring_to_string(newfile);
+
+            // Add info to the Title bar and Status Bar
+            lb_file->value((getFilename::FromPath(fname)).c_str());
+            SetWindowTextA(xid, lb_file->value());
+
+            }
+
+        filesW.at(x) = newfile;
+        }
+    }
+//os::openPathW(fpath);} {}
+}
+
+Function {getTagsFromPathOfTxt(std::wstring fpath)} {private return_type void
+} {
+  code {// check there is a default path
+if (!os::doesFileExistW(fpath)) {
+    fl_choice("Path Not Set", "OK", 0, 0);
+    std::vector<std::string> tmp;
+    return;
+    }
+
+// Grab the files from the path
+std::vector<std::wstring> files = os::getFilesW(fpath + L"*.txt");
+unsigned int num_files = files.size();
+if (num_files == 0) {
+    std::cout << "no text files in path\\n";
+    return;
+    }
+
+
+// read in tags from each text
+std::vector<std::string> tags;
+std::vector<std::string> ss;
+unsigned int sc;
+for (unsigned int j = 0; j < num_files; j++) {
+    ss.clear();
+    readTagsFromFile(files.at(j), ss, false);
+
+    // add unique tags to collection of tags
+    sc = ss.size();
+    for (unsigned int i = 0; i < sc; i++) {
+
+        ss.at(i) = trim(ss.at(i), " ");
+        ss.at(i) = trim(ss.at(i), "\\t");
+        if (ss.at(i).size() == 0) {continue;}
+        ss.at(i) = tolower(ss.at(i));
+
+        if (std::find(tags.begin(), tags.end(), ss.at(i)) == tags.end()) {
+            tags.push_back(ss.at(i));
+            }
+        }
+    }
+
+unsigned int num_tags = tags.size();
+if (num_tags == 0) {
+    std::cout << "no tags from text parse\\n";
+    return;
+    }
+
+// sort tags
+std::sort(tags.begin(), tags.end());
+
+// format tags into text
+std::string text_data = "";
+for (unsigned int i = 0; i < num_tags; i++) {
+
+    text_data += tags.at(i);
+    if (i + 1 < num_tags) {
+        text_data += ", ";
+        }
+    }
+if (text_data.size() > 0) {
+
+    bytestream s;
+    std::wstring text_file = fpath + L"gathered tags.txt";
+    s.writeFileW(text_file, 0, text_data.size(), (char*)text_data.c_str());
+    os::start(text_file);
+    //os::deleteFileW(text_file, true);
+
+    }} {}
+}
+
+Function {batch_rename()} {private return_type void
+} {
+  code {// check there is a default path
+if (!os::doesFileExistW(work_path)) {
+    fl_choice("Path Not Set", "OK", 0, 0);
+    return;
+    }
+
+// ask for new name
+const char* input = fl_input("please enter new name");
+if (input != nullptr) {
+    renameDataset(work_path, std::string(input));
+    }} {}
+}
+
+Function {load_tagfile(std::wstring file)} {open return_type int
+} {
+  code {// use FLTK's native loadfile function to read the txt into the widget
+int result = 0;
+bytestream f;
+if ((result = f.openFileW(file))) {
+
+    //int result = textbuf->loadfile((unicode_to_utf8(file)).c_str());
+    //if (result == 0) {}
+
+    // Parse what was read from the file
+    std::string tmpstr = "";
+    //tmpstr = textbuf->text();
+    while (!f.eos()) {tmpstr += f.readline();}
+
+
+    // trim white space
+    tmpstr = trim(tmpstr, " ");
+
+    // check the file isn't empty
+    if (tmpstr.size() > 0) {
+
+        // split the string by any comma's
+        std::vector<std::string> tmptags = split(tmpstr, ",");
+        unsigned int num_tags = tmptags.size();
+
+        //std::cout << "num_tags: \\t" << num_tags << std::endl;
+        std::vector<std::string> tags;
+        for (unsigned int i = 0; i < num_tags; i++) {
+
+            // clean up tag
+            tmptags.at(i) = trim(tmptags.at(i), " ");
+            tmptags.at(i) = trim(tmptags.at(i), "\\t");
+            tmptags.at(i) = tolower(tmptags.at(i));
+
+            if (tmptags.at(i).size() == 0) {continue;}
+
+            //std::cout << "typin" << i << ":\\t " << tmptags.at(i) << std::endl;
+            appendIfUnique<std::string>(tags, tmptags.at(i));
+            }
+
+        Fl_Light_Button* lbtn;
+
+
+        unsigned int num_tag_btns = tag_sidebar_pack->children();
+        for (unsigned int i = 0; i < num_tag_btns; i++) {
+            lbtn = (Fl_Light_Button*)tag_sidebar_pack->child(i);
+            lbtn->clear();
+            lbtn->redraw();
+            }
+
+        // sort and write back to the widget
+        num_tags = tags.size();
+        if (num_tags > 0) {
+            std::sort(tags.begin(), tags.end());
+            tmpstr = "";
+            //signed int x;
+            std::string tag_name;
+            for (unsigned int i = 0; i < num_tags; i++) {
+
+                for (unsigned int j = 0; j < num_tag_btns; j++) {
+
+                    lbtn = (Fl_Light_Button*)tag_sidebar_pack->child(j);
+                    tag_name = lbtn->label();
+                    if (tag_name == tags.at(i)) {
+                        lbtn->set();
+                        lbtn->redraw();
+                        break;
+                        }
+                    }
+                //std::cout << "tag" << i << ":\\t " << tags.at(i) << std::endl;
+                tmpstr+= tags.at(i) + ", ";
+                }
+            tmpstr+= tags.at(num_tags - 1) + "\\n";
+            }
+        textbuf->text(tmpstr.c_str());
+        }
+    f.close();
+    }
+return result;} {}
+}
+
+Function {load_image()} {open return_type bool
+} {
+  code {clear_image();
+
+// update image selection index in database
+settings->selected = sel_file;
+
+
+// Check that the index for the files array is in bounds
+if (!isSelectionValid()) {
+    std::cout << "index for image array is out of bounds [" << sel_file << ":" << filesW.size() << "]" << std::endl;
+    std::cout << "Size: " << filesW.size() << std::endl;
+    std::cout << "sel_file: " << sel_file << std::endl;
+    std::cout << "sel_file2: " << (unsigned int)(sel_file + 1) << std::endl;
+    return false;
+    }
+
+// since windows uses wide characters, and FTLK uses UTF8 convert file to wide (for windows)
+std::string file = unicode_to_utf8(filesW.at(sel_file));
+
+// Determine file type from naming extension
+std::string fext = tolower(getFilename::Type(file));
+
+// check if input is a text file
+if (fext == ".txt" || fext == ".csv") {
+    std::cout << "warning a none image type was provided, trying to search for nearest image\\n";
+    // check for iamge file
+    std::wstring wstr = filesW.at(sel_file).substr(0, filesW.at(sel_file).find_last_of(L"."));
+    if (os::doesFileExistW(wstr + L".jpg")) {
+        filesW.at(sel_file) = wstr + L".jpg";
+        fext = ".jpg";
+        }
+    else if (os::doesFileExistW(wstr + L".jpeg")) {
+        filesW.at(sel_file) = wstr + L".jpeg";
+        fext = ".jpeg";
+        }
+    else if (os::doesFileExistW(wstr + L".bmp")) {
+        filesW.at(sel_file) = wstr + L".bmp";
+        fext = ".bmp";
+        }
+    else if (os::doesFileExistW(wstr + L".png")) {
+        filesW.at(sel_file) = wstr + L".png";
+        fext = ".png";
+        }
+    else {
+        std::cout << "failed to locate image type\\n" << std::endl;
+        return false;
+        }
+
+    file = unicode_to_utf8(filesW.at(sel_file));
+    }
+
+// Bail if type not supported
+int type = 0;
+if      (fext == ".jpg" || fext == ".jepg") {type=1;}
+else if (fext == ".png")                    {type=2;}
+else if (fext == ".bmp")                    {type=3;}
+else {
+    std::cout << "Image Type Not Supported By App [" << fext << "]" << std::endl;
+    return false;
+    }
+
+
+// Load data / render to screen
+switch (type) {
+    case 1: {
+        Fl_JPEG_Image* jpg = new Fl_JPEG_Image(file.c_str());
+        char* errMsg = nullptr;
+        size_t errMsgLen = 0;
+        switch ( jpg->fail() ) { // Check for Errors
+            case Fl_Image::ERR_NO_IMAGE:
+            case Fl_Image::ERR_FILE_ACCESS: {
+                strerror_s(errMsg, errMsgLen, errno);
+                fl_alert("%s: %s", file.c_str(), errMsg);
+                if (errMsg != nullptr) {delete errMsg;}
+                return false;
+            }
+            case Fl_Image::ERR_FORMAT: {fl_alert("%s: couldn't decode image", file.c_str()); return false;}
+            }
+        imgbuf = jpg->copy(); delete jpg; shp_image->image( imgbuf );
+        break;
+        }
+    case 2: {
+        Fl_PNG_Image* png = new Fl_PNG_Image(file.c_str());
+        char* errMsg = nullptr;
+        size_t errMsgLen = 0;
+        switch ( png->fail() ) { // Check for Errors
+            case Fl_Image::ERR_NO_IMAGE:
+            case Fl_Image::ERR_FILE_ACCESS: {
+
+                strerror_s(errMsg, errMsgLen, errno);
+                fl_alert("%s: %s", file.c_str(), errMsg); break;
+                if (errMsg != nullptr) { delete errMsg; }
+                return false;
+            }
+            case Fl_Image::ERR_FORMAT: {fl_alert("%s: couldn't decode image", file.c_str()); return false;}
+            }
+        imgbuf = png->copy(); delete png; shp_image->image( imgbuf );
+        break;
+        }
+    case 3: {
+        Fl_BMP_Image* bmp = new Fl_BMP_Image(file.c_str());
+        char* errMsg = nullptr;
+        size_t errMsgLen = 0;
+        switch ( bmp->fail() ) { // Check for Errors
+            case Fl_Image::ERR_NO_IMAGE:
+            case Fl_Image::ERR_FILE_ACCESS: {
+                strerror_s(errMsg, errMsgLen, errno);
+                fl_alert("%s: %s", file.c_str(), errMsg); break;
+                if (errMsg != nullptr) { delete errMsg; }
+                return false;
+                }
+            case Fl_Image::ERR_FORMAT: {
+                fl_alert("%s: couldn't decode image", file.c_str());
+                return false;
+                }
+            }
+        imgbuf = bmp->copy(); delete bmp; shp_image->image( imgbuf );
+        break;
+        }
+    default: {
+        std::cout << "unsupported type\\n";
+        return false;
+        }
+    }
+
+
+
+//    settings->regions.clear();
+
+//std::cout << "Regions Left: \\t" << shp_image->children() << std::endl;
+
+
+
+
+
+// check that the number of arrays is larger then 0
+/*
+imgm5d = "3B5D3C7D207E37DCEEEDD301E35E2E58";
+
+if (imgbuf->count() > 0) { // there can be more then one pixel array for a given image
+
+    // Calculate the theortical size, I didn't understand what the doc said able ld() tho so might not work
+    unsigned int buf_size = imgbuf->w() * imgbuf->h() * imgbuf->d();
+
+    if (buf_size > 0) {
+        // read the first buffer pointer to the RGB data, I didnt understand what the doc said about multiple image arrays, sooo
+        const char* buf = static_cast<const char*>( *imgbuf->data() );
+
+        // Should be able to read the pixels, check with d() to get how many channels RGB(3) or RGBA(4)
+        //for (unsigned int i = 0; i < 12; i++) {std::cout << i << ": \\t" << (int)(unsigned char)buf[i] << std::endl;}
+
+        // Create a MD5 checksum from the pixel array
+        imgm5d = md5(buf, buf_size);
+        //std::cout << "GENERATED MD5: \\t" << imgm5d << std::endl;
+        // add image to database
+        //settings->addImage(file, imgm5d, imgbuf->w(), imgbuf->h(), "");
+        }
+    }
+*/
+
+
+
+// Set Zoom out Limit
+imgmin_limit = imgmin_limit_default;
+if (imgbuf->w() < imgmin_limit && imgbuf->w() > 0) {imgmin_limit = imgbuf->w();}
+if (imgbuf->h() < imgmin_limit && imgbuf->h() > 0) {imgmin_limit = imgbuf->h();}
+
+// calculate zoom ratio
+img_resize();
+
+// resize mage
+img_rescale();
+
+// Set Image Start Position
+imgpos[0] = tile_view->x() + (tile_view->w() / 2) - (shp_image->w() / 2);
+imgpos[1] = tile_view->y() + (tile_view->h() / 2) - (shp_image->h() / 2);
+
+// Update Image Position
+shp_image->position(imgpos[0], imgpos[1] );
+
+
+// Load any regions from previous
+//settings->set(image_data(imgm5d, file, "", imgbuf->w(), imgbuf->h()));
+
+settings->loadCSV(getFilename::Path(file) + getFilename::File(file) + ".csv", sel_file);
+
+unsigned int reg_count = settings->count();
+if (reg_count > 0) {
+
+    signed int img_center_x = shp_image->x() + (shp_image->w() / 2);
+    signed int img_center_y = shp_image->y() + (shp_image->h() / 2);
+
+    for (unsigned int  i = 0; i < reg_count; i++) {
+
+        //std::cout << "CSV Region: (" << settings->image.at(sel_file).region.at(i).x << ", ";
+        //std::cout << settings->image.at(sel_file).region.at(i).y << ", ";
+        //std::cout << settings->image.at(sel_file).region.at(i).w << ", ";
+        //std::cout << settings->image.at(sel_file).region.at(i).h << ")" << std::endl;
+
+        Resizeable* boxregion = (
+            new Resizeable(
+                (signed int)((float)((settings->image.at(sel_file).region.at(i).x - (settings->image.at(sel_file).region.at(i).w * 0.5f)) * imgzoom) + img_center_x),
+                (signed int)((float)((settings->image.at(sel_file).region.at(i).y - (settings->image.at(sel_file).region.at(i).h * 0.5f)) * imgzoom) + img_center_y),
+                (signed int)((float)settings->image.at(sel_file).region.at(i).w * imgzoom),
+                (signed int)((float)settings->image.at(sel_file).region.at(i).h * imgzoom),
+                settings->image.at(sel_file).region.at(i).tag.c_str()
+                )
+            );
+        //                    boxregion->box(FL_NO_BOX);
+        boxregion->labelfont(5);
+       if (bit::get(visiblity, 1)) {boxregion->show();} else {boxregion->hide();}
+
+        //                        boxregion->selection_color((Fl_Color)14);
+        //boxregion->image(G_cat);
+        boxregion->box(FL_NO_BOX);
+        //                        boxregion->color(Fl_Color(46));
+
+
+        boxregion->labelfont(5);
+        //boxregion->copy_label(tag_name.c_str());
+        //boxregion->callback((Fl_Callback*)tags_btn_update, (void*)boxregion->label());
+        shp_image->add(boxregion);
+        boxregion->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+        boxregion->when(FL_WHEN_RELEASE);
+        //        boxregion->resizable(shp_image);
+
+        //boxregion->copy_label(tag_name.c_str());
+        //boxregion->callback((Fl_Callback*)tags_btn_update, (void*)boxregion->label());
+        shp_image->add(boxregion);
+
+
+
+        shp_image->redraw();
+        boxregion->redraw();
+
+        // Create a new region, not sure I even have to given it a position??
+        //float invzoom = 1.0f / imgzoom;
+
+        //settings->add(
+        //    region_data(
+        //        settings->width(i) * invzoom,
+         //       settings->height(i) * invzoom,
+         //       settings->posx(i) * invzoom,
+         //       settings->posy(i) * invzoom,
+         //       settings->name(i)
+         ////       )
+         //   );
+
+        }
+
+
+    }
+
+
+
+// Add info to the Title bar and Status Bar
+lb_file->value((getFilename::FromPath(file)).c_str());
+SetWindowTextA(xid, lb_file->value());
+
+std::string info = to_string(imgbuf->w());
+info += " x ";
+info += to_string(imgbuf->h());
+if (fext.size() > 0) {info += " " + fext.substr(1);}
+lb_info->value(info.c_str());
+
+info = to_string((int)(imgzoom * 100)) + "%";
+lb_zoom->value(info.c_str());
+
+info = to_string(sel_file + 1) + "/" + to_string(num_files);
+lb_page->value(info.c_str());
+
+info = "";
+size_t imgsize = os::getFileSizeW(filesW.at(sel_file));
+if (imgsize > 999999) {info += floatToString((float)imgsize / 1000000.0f) + " mb";}
+else if (imgsize > 999) {info += floatToString((float)imgsize / 1000.0f) + " kb";}
+else {info += to_string(imgsize) + " bytes";}
+lb_fsize->value(info.c_str());
+
+
+// Check for Text file
+std::wstring txtfile = getFilename::PathW(filesW.at(sel_file)) + getFilename::FileW(filesW.at(sel_file)) + L".txt";
+if (os::doesFileExistW(txtfile)) {load_tagfile(txtfile);}
+
+// Redraw all widgets
+redraw_ui();
+return true;} {}
+}
+
+Function {read_image(std::string file)} {return_type bool
+} {
+  code {// fetch files from directory
+std::wstring fileW = utf8_2_unicode(file);
+std::wstring fpathW = getFilename::PathW(fileW);
+filesW = os::getFilesW(fpathW + L"*.*");
+
+// remove any unsupported file types by extension
+sel_file = -1;
+num_files = filesW.size();
+std::wstring fextW;
+for (unsigned int i = num_files; i --> 0; ) {
+    fextW = toLowerW(getFilename::TypeW(filesW.at(i)));
+    if (!(fextW == L".jpg" || fextW == L".jpeg" || fextW == L".bmp" || fextW == L".png")) {
+        filesW.erase(filesW.begin() + i);
+        }
+    }
+
+// Check files array is not empty
+num_files = filesW.size();
+//std::cout << "num_files: \\t" << num_files << std::endl;
+//for (unsigned int i = 0; i < num_files; i++) {
+//    std::wcout << L"file" << i << ": \\t" << filesW.at(i) << std::endl;
+//    }
+if (num_files == 0) {
+    std::cout << "no files\\n";
+    return false;
+    }
+
+// sort files
+std::sort(filesW.begin(), filesW.end());
+
+// find previously opened file in the files array
+std::string file_tmp = getFilename::FromPath(file);
+for (unsigned int i = num_files; i --> 0; ) {
+    if (file_tmp == getFilename::FromPath(unicode_to_utf8(filesW.at(i)))) {
+        settings->selected = sel_file = i;
+        break;
+        }
+    // if (.find(fileW) != std::string::npos) {sel_file = i; break;}
+    }
+
+// check if the file was located in the files array
+if (sel_file < 0 || num_files == 0 || (unsigned int)(sel_file + 1) > num_files) {
+    std::cout << "failed to index file\\n";
+    return false;
+    }
+
+// reset images array
+settings->image.clear();
+settings->image = std::vector<image_data>(num_files);
+settings->selected  = 0;
+
+// add current file to recents list
+if (settings->recents.size() >= 10) {
+
+    // check that the file is unique to the
+
+    signed int x = findItem(settings->recents, file);
+
+    if (x > -1) {
+        // shift down the items in the recents list
+        unsigned int z = 9;
+        for (unsigned int i = 10; i --> 1; ) {
+            if (i != (unsigned int)x) {
+                settings->recents.at(i) = settings->recents.at(z);
+                if (z == 0) {break;}
+                z--;
+                }
+            }
+        }
+    else {
+        // shift down the items in the recents list
+        for (unsigned int i = 10; i --> 1; ) {
+            settings->recents.at(i) = settings->recents.at(i - 1);
+            }
+        }
+
+    // insert new name into list
+    settings->recents.at(0) = file;
+    settings->save_recents_as_ini();
+
+    // populate list
+    rebuild_mnu_recents();
+    } else {std::cout << "not enough recents\\n";}
+
+
+
+// Get the current folder, path used later to file management
+root_path = fpathW;
+work_path = fpathW;
+
+if (num_files > 0) {
+    std::vector<std::string> tags_in_folder;
+    for (unsigned int i = 0; i < num_files; i++) {
+        readTagsFromFile (root_path + getFilename::FileW(filesW.at(i)) + L".txt", tags_in_folder, true);
+        }
+    update_tag_buttons(tags_in_folder);
+    }
+
+// render current image that was indexed in the files array
+return load_image();} {}
+}
+
+comment {>>>>>>>>>>>   CUSTOM WIDGETS    <<<<<<<<<<<<} {in_source in_header
+}
+
+Function {add_multi_label(Fl_Menu_Item* &o, Fl_Image* image)} {
+  comment {Adds a Multi Label to menu to have an image} private
+} {
+  code {const char* l = o->label();
+o->image(image);
+Fl_Multi_Label *ml = new Fl_Multi_Label;
+ml->typea  = _FL_IMAGE_LABEL;
+ml->labela = (const char*)image;
+ml->typeb  = FL_NORMAL_LABEL;
+ml->labelb = (char*)l;
+ml->label(o);
+o->label(_FL_MULTI_LABEL , (const char *)ml);} {}
+}
+
+Function {get_init_theme(HWND win_hwnd = nullptr)} {
+  comment {generate dark theme pallete} private return_type void
+} {
+  code {int N = 4 + FL_NUM_GRAY;
+r = std::vector<unsigned char> (N, 0);
+g = std::vector<unsigned char> (N, 0);
+b = std::vector<unsigned char> (N, 0);
+
+// store default (OS-dependent) interface colors:
+Fl::get_system_colors();
+Fl::get_color(FL_BACKGROUND_COLOR, r[0], g[0], b[0]);
+Fl::get_color(FL_BACKGROUND2_COLOR, r[1], g[1], b[1]);
+Fl::get_color(FL_FOREGROUND_COLOR, r[2], g[2], b[2]);
+Fl::get_color(FL_SELECTION_COLOR, r[3], g[3], b[3]);
+
+for (int i = 0; i < FL_NUM_GRAY; i++) {
+    Fl::get_color(fl_gray_ramp(i), r[4 + i], g[4 + i], b[4 + i]);
+    }
+
+if (win_hwnd != nullptr) {xid = win_hwnd;}} {}
+}
+
+class Resizeable {
+  comment {resizable box
+https://stackoverflow.com/a/43239188
+} : {public Fl_Box}
+} {
+  Function {Resizeable(int X, int Y, int W, int H, const char*l=0) : Fl_Box(X,Y,W,H,l)} {open return_type Resizeable
+  } {
+    code {//image(G_cat);
+box(FL_UP_BOX);
+color(FL_GRAY);} {}
+  }
+  decl {bool can_resize;} {private local
+  }
+  decl {bool is_on_right_bottom_corner;} {private local
+  }
+  decl {signed int org[2];} {private local
+  }
+  Function {draw()} {open private return_type void
+  } {
+    code {Fl_Box::draw();
+fl_rect(x(), y(), w(), h(), FL_RED);
+int bottom_right_x = w() + x();
+int bottom_right_y = h() + y();
+fl_polygon(
+    bottom_right_x - 6, bottom_right_y - 1,
+    bottom_right_x - 1, bottom_right_y - 6,
+    bottom_right_x -1, bottom_right_y - 1
+    );} {}
+  }
+  Function {handle(int event)} {open private return_type int
+  } {
+    code {switch (event) {
+    case FL_PUSH: {
+
+        can_resize = is_on_right_bottom_corner;
+        org[0] = Fl::event_x(); org[1] = Fl::event_y();
+
+        if (Fl::event_button() == FL_LEFT_MOUSE) {
+            if (Fl::event_state() & FL_ALT) {
+
+
+                switch ( fl_choice("Remove Box?", "OK", "Cancel", 0) ) {
+                    case 0: {
+                        if (settings->image.size() > 0 && (unsigned int)sel_file < settings->image.size()) {
+
+                            if ((box_index = shp_image->find(this)) > -1) { // get widget's child index from pointer
+
+
+
+
+                                Fl_Widget* boxregion = shp_image->child(box_index); // Returns Pointer from Object
+                                shp_image->remove(box_index); // Remove Widget
+                                settings->remove(box_index); // Remove From Database
+                                delete boxregion; // Delete Widget Object
+                                shp_image->redraw();
+
+                                // store the region relative to the parent group, from each there respective centers
+                                if (!bit::get(write_txt, 4)) {write_txt = bit::set(write_txt, 4, true);}
+                                }
+                            }
+                        break;
+                        }
+                    case 1: {break;} // no
+                    }
+
+                }
+
+
+            else if (Fl::event_clicks() > 0) {
+
+                if ((box_index = shp_image->find(this)) > -1) { // get widget's child index from pointer
+
+
+                    if (settings->image.size() > 0 && (unsigned int)sel_file < settings->image.size()) {
+
+                        const char* input = fl_input("Name", settings->image.at(sel_file).region.at(box_index).tag.c_str());
+
+                        if (input != nullptr) {
+                            settings->image.at(sel_file).region.at(box_index).tag = (std::string)input;
+                            settings->image.at(sel_file).region.at(box_index).tag = trim(settings->image.at(sel_file).region.at(box_index).tag, " ");
+                            settings->image.at(sel_file).region.at(box_index).tag = tolower(settings->image.at(sel_file).region.at(box_index).tag);
+                            if (settings->image.at(sel_file).region.at(box_index).tag.size() > 0) {
+
+                                copy_label(settings->image.at(sel_file).region.at(box_index).tag.c_str());
+
+                                // store the region relative to the parent group, from each there respective centers
+                                if (!bit::get(write_txt, 4)) {write_txt = bit::set(write_txt, 4, true);}
+
+                                std::vector<std::string> tmp = split(std::string(textbuf->text()), ",");
+                                unsigned int numtags = tmp.size();
+                                bool needToAddTag = true;
+                               // std::cout << "needToAddTag: \\t" << needToAddTag << std::endl;
+                                for (unsigned int i = 0; i < numtags; i++) {
+                                    if (trim(tmp.at(i), " ") == settings->image.at(sel_file).region.at(box_index).tag) {
+                                        needToAddTag = false;
+                                        break;
+                                        }
+                                    }
+                                if (needToAddTag) {
+
+                                    if (!bit::get(write_txt, 2)) {write_txt = bit::set(write_txt, 2, true);}
+                                    settings->image.at(sel_file).tag.push_back(settings->image.at(sel_file).region.at(box_index).tag);
+                                    std::string tags_text = textbuf->text();
+                                    tags_text = trim(tags_text, "\\n\\r ");
+
+
+                                    if (tags_text.size() > 0) {
+                                        if (tags_text.substr(tags_text.size() - 1, 1) != ",") {
+                                            tags_text += ", ";
+                                            }
+                                        tags_text += settings->image.at(sel_file).region.at(box_index).tag;
+                                        }
+                                    textbuf->text(tags_text.c_str());
+                                    edt_sdtags->redraw();
+                                    }
+
+                                }
+                            redraw();
+
+                            }
+
+
+
+
+                        }
+
+
+
+                    }
+
+                }
+
+
+            }
+
+        return 1;
+        }
+    case FL_RELEASE: {
+        can_resize = false;
+        keycombo[1] = keycombo[0]; keycombo[0] = Fl::event_key();
+        return 1;
+        }
+    case FL_DRAG: {
+        if (can_resize) {
+            int X = Fl::event_x();
+            int Y = Fl::event_y();
+            int W = X > x() + 1 ? X - x() : w();
+            int H = Y > y() + 1 ? Y - y() : h();
+
+            size(W, H);
+
+            box_index = shp_image->find(this);
+            //unsigned int numregions = shp_image->children();
+            //for (unsigned int i = 0; i < numregions; i++) {
+            //    if (shp_image->child(i) == this) {
+            //        box_index = i;
+            //        break;
+            //        }
+            //    }
+            //
+            //std::cout << "box_index: \\t" << box_index << " \\t (" << shp_image->find(this) << ")" << std::endl;
+
+            if (settings->image.size() > 0 && (unsigned int)sel_file < settings->image.size() && box_index > -1 && (unsigned int)box_index < settings->image.at(sel_file).region.size()) {
+                float invzoom = 1.0f / imgzoom;
+
+                // store the region relative to the parent group, from each there respective centers
+                if (!bit::get(write_txt, 4)) {write_txt = bit::set(write_txt, 4, true);}
+
+                settings->edit(
+                    box_index,
+                    (signed int)((float)((x() + (w() * 0.5f)) - (shp_image->x() + (shp_image->w() * 0.5f))) * invzoom),
+                    (signed int)((float)((y() + (h() * 0.5f)) - (shp_image->y() + (shp_image->h() * 0.5f))) * invzoom),
+                    (signed int)((float)w() * invzoom),
+                    (signed int)((float)h() * invzoom)
+                    );
+                }
+
+            parent()->redraw();
+            redraw_ui();
+            }
+        else if (Fl::event_button() == FL_LEFT_MOUSE) {
+
+
+
+            // Calculate the offset dragged from last click (origin)
+            int X = Fl::event_x() - org[0];
+            int Y = Fl::event_y() - org[1];
+
+            // Add offset to position
+            position(x() + X,  y() + Y);
+
+            // Update the position of the region
+            // (old_coordinate_x - focus_point_around_which_scale_is_done_x)*scale_factor + focus_point_around_which_scale_is_done_x = new_coordinate_
+
+            box_index = shp_image->find(this);
+            if (box_index > -1) {
+
+                // Set Write Flag
+                if (!bit::get(write_txt, 4)) {write_txt = bit::set(write_txt, 4, true);}
+
+                float invzoom = 1.0f / imgzoom;
+
+                settings->edit(
+                    box_index,
+                    (signed int)((float)((x() + (w() * 0.5f)) - (shp_image->x() + (shp_image->w() * 0.5f))) * invzoom),
+                    (signed int)((float)((y() + (h() * 0.5f)) - (shp_image->y() + (shp_image->h() * 0.5f))) * invzoom),
+                    (signed int)((float)w() * invzoom),
+                    (signed int)((float)h() * invzoom)
+                    );
+
+                }
+
+            // Update Origin with the last dragged position
+            org[0] = Fl::event_x(); org[1] = Fl::event_y();
+
+            // Redraw the UI
+            redraw();
+            parent()->redraw();
+            redraw_ui();
+            }
+        return 1;
+        }
+    case FL_MOVE: {
+        int dist_right_border  = std::abs(x() + w() - Fl::event_x());
+        int dist_bottom_border = std::abs(y() + h() - Fl::event_y());
+        is_on_right_bottom_corner = (dist_right_border < 10 && dist_bottom_border < 10);
+        window()->cursor(is_on_right_bottom_corner ? FL_CURSOR_SE : FL_CURSOR_DEFAULT);
+        return 1;
+        }
+    case FL_ENTER: {
+        return 1;
+        }
+    case FL_LEAVE: {
+        window()->cursor(FL_CURSOR_DEFAULT);
+        return 1;
+        }
+    }
+return 0;} {}
+  }
+}
+
+class Fl_Text_EditorDC {
+  comment {Input Handling} : {public Fl_Text_Editor}
+} {
+  Function {Fl_Text_EditorDC(int X,int Y,int W,int H,const char*l=0) : Fl_Text_Editor(X,Y,W,H,l)} {open return_type Fl_Text_EditorDC
+  } {
+    code {} {}
+  }
+  Function {handle(int e)} {open return_type int
+  } {
+    code {switch ( e ) {
+    case FL_KEYDOWN: {
+        if (box_draw) {break;}
+        if (debug) {std::cout << "EDITOR PRESS\\n";}
+        // store the last key strokes
+        keycombo[1] = keycombo[0]; keycombo[0] = Fl::event_state();
+
+        // try to do auto complete some how..
+        //tag_word += Fl::event_key();
+        //if (Fl::event_key() == ',') {tag_word = "";}
+        //std::cout << tag_word << std::endl;
+
+
+        break;
+        }
+    case FL_KEYUP: {
+        if (box_draw) {break;}
+        if (debug) {std::cout << "EDITOR PRESS RELEASE\\n";}
+        // store the last key strokes
+        keycombo[1] = keycombo[0]; keycombo[0] = 0;
+
+        // Set Text changed flag
+        if (bit::get(write_txt, 1) == true && bit::get(write_txt, 2) == false) {
+            write_txt = bit::set(write_txt, 2, true);
+            }
+        break;
+        }
+    case FL_MOUSEWHEEL: {
+
+        // resize the text with the mouse wheel
+        if (box_draw) {break;}
+        if (((keycombo[0] & FL_CTRL) || (keycombo[0] == FL_Control_L || keycombo[0] == FL_Control_R)) && Fl::event_y() > edt_sdtags->y()) {
+            edt_font_size += (Fl::event_dy() * -4);
+            if      (edt_font_size < 8)  {edt_font_size = 8;}
+            else if (edt_font_size > 72) {edt_font_size = 72;}
+            edt_sdtags->textsize(edt_font_size);
+
+            edt_sdtags->redraw();
+            }
+        break;
+        }
+    default: {
+        if (debug) {
+            printf("[%2d] EDITOR = %2d = %s\\n", 0, e, fl_eventnames[e]);
+            fflush(stdout);
+            }
+        }
+    }
+return(Fl_Text_Editor::handle(e));} {}
+  }
+}
+
+class Fl_ScrollDC {
+  comment {Input Handling} : {public Fl_Scroll}
+} {
+  Function {Fl_ScrollDC(int x,int y,int w,int h) : Fl_Scroll(x,y,w,h)} {return_type Fl_ScrollDC
+  } {
+    code {} {}
+  }
+  Function {handle(int e)} {open return_type int
+  } {
+    code {/*
+    i store the last key stroke/event,
+    i stored the last two to detect double click or like ctrl shift together
+*/
+switch ( e ) {
+    case FL_DND_ENTER: {} // return(1) for these events to 'accept' dnd
+    case FL_DND_DRAG: {}
+    case FL_DND_RELEASE: {return 1;}
+    case FL_PASTE: {
+        // try to read the file from drag and drop
+        read_image(Fl::event_text());
+        return 1;
+        }
+    case FL_RELEASE: {
+        // unclicked
+        if (Fl::event_button() == FL_LEFT_MOUSE) {
+            // update the origin
+            img_origin();
+            }
+        }
+    case FL_PUSH: {
+        // log keystrokes, so I can detect combinations
+        keycombo[1] = keycombo[0];
+        keycombo[0] = Fl::event_button();
+
+        // If Right Clicked
+        if (keycombo[0] == FL_RIGHT_MOUSE ) {
+
+            // Restore image to center of window widget
+            img_restore();
+
+            // Double Clicked, doesnt work need to clear it after a amount of time
+            //if (keycombo[1]) {std::cout << "double clocked\\n";}
+            }
+
+        // If Left Clicked
+        else if (keycombo[0] == FL_LEFT_MOUSE ) {
+            // Set New Origin Point
+            img_origin();
+            }
+
+        break;
+        }
+    case FL_KEYDOWN: {
+        // store the last key strokes
+        keycombo[1] = keycombo[0];
+        keycombo[0] = Fl::event_state();
+        break;
+        }
+    case FL_KEYUP: {
+        // store the last key strokes
+        keycombo[1] = keycombo[0];
+        keycombo[0] = 0;
+        break;
+        }
+    case FL_MOUSEWHEEL: {
+        //tag_sidebar->redraw();
+        redraw_ui();
+        /*
+        // Bail, if nothing in image buffer
+        if (imgbuf == nullptr) {break;}
+
+        // check which widget the cursor's at
+        if (Fl::event_y() < edt_sdtags->y()) {
+
+        // Check if Control Key is was Pressed
+        if ( keycombo[0] & FL_CTRL) {
+
+        // Scale Image
+        img_scale();
+        }
+        else {
+        // Save Text
+        save_txt();
+
+        // Load next Image in the directory from the files array
+        if (Fl::event_dy() > 0) {sel_file++;} else {sel_file--;}
+        if (sel_file < 0) {sel_file = 0;} else if ((unsigned)(sel_file + 1) > num_files) {sel_file = num_files - 1;}
+        load_image();
+        }
+        return 1;
+        }
+        */
+        break;
+        }
+
+    // for debugging
+    default: {
+        if (debug) {
+            //    if (mousecur != Fl_Cursor::FL_CURSOR_DEFAULT) {
+            //        mousecur = Fl_Cursor::FL_CURSOR_DEFAULT;
+            //        win_main->cursor(mousecur);
+            //        win_main->redraw();
+            //        }
+            //    keycombo[1] = keycombo[0];
+            //    keycombo[0] = 0;
+            printf("[%2d] SCROLL MISSED = %2d = %s\\n", 0, e, fl_eventnames[e]);
+            fflush(stdout);
+            }
+        }
+    }
+return(Fl_Scroll::handle(e));} {}
+  }
+}
+
+class Fl_GroupDC {
+  comment {Input Handling} open : {public Fl_Group}
+} {
+  Function {Fl_GroupDC(int X,int Y,int W,int H,const char*l=0) : Fl_Group(X,Y,W,H,l)} {return_type Fl_GroupDC
+  } {
+    code {} {}
+  }
+  Function {handle(int e)} {open return_type int
+  } {
+    code {/*
+    i store the last key stroke/event,
+    i stored the
+    last two to detect double click or like ctrl shift together
+*/
+switch (e) {
+    case FL_RELEASE: {
+        // unclicked
+        keycombo[1] = keycombo[0] = 0;
+
+        if (box_draw) {
+            box_draw = false;
+            std::cout << "Region Pos: [" << boxorg[0] - shp_image->x() << " \\t " << boxorg[1] - shp_image->y() << std::endl;
+
+            // adding new region
+            if (settings != nullptr && settings->image.size() > 0 && sel_file < (signed int)settings->image.size() && box_index > -1 && box_index < (signed int)settings->image.at(sel_file).region.size()  ) {
+                Resizeable* boxregion = (Resizeable*)shp_image->child(box_index);
+
+                if (boxregion->label() == nullptr || (std::string)boxregion->label() == "") {
+
+                    const char* input = fl_input("Name", settings->image.at(sel_file).region.at(box_index).tag.c_str());
+
+                    if (input != nullptr) {
+                        settings->image.at(sel_file).region.at(box_index).tag = (std::string)input;
+                        settings->image.at(sel_file).region.at(box_index).tag = trim(settings->image.at(sel_file).region.at(box_index).tag, " ");
+                        settings->image.at(sel_file).region.at(box_index).tag = tolower(settings->image.at(sel_file).region.at(box_index).tag);
+
+                        boxregion->copy_label(settings->image.at(sel_file).region.at(box_index).tag.c_str());
+                        if (settings->image.size() > 0 && (unsigned int)sel_file < settings->image.size()) {
+
+
+
+                            // store the region relative to the parent group, from each there respective centers
+                            if (!bit::get(write_txt, 4)) {write_txt = bit::set(write_txt, 4, true);}
+
+
+                            std::vector<std::string> tmp = split(std::string(textbuf->text()), ",");
+                            unsigned int numtags = tmp.size();
+                            bool needToAddTag = true;
+                            //std::cout << "needToAddTag: \\t" << needToAddTag << std::endl;
+                            for (unsigned int i = 0; i < numtags; i++) {
+                                if (trim(tmp.at(i), " ") == settings->image.at(sel_file).region.at(box_index).tag) {
+                                    needToAddTag = false;
+                                    break;
+                                    }
+                                }
+                            if (needToAddTag) {
+
+                                if (!bit::get(write_txt, 2)) {write_txt = bit::set(write_txt, 2, true);}
+                                settings->image.at(sel_file).tag.push_back(settings->image.at(sel_file).region.at(box_index).tag);
+                                std::string tags_text = textbuf->text();
+                                tags_text = trim(tags_text, "\\n\\r ");
+
+
+                                if (tags_text.size() > 0) {
+                                    if (tags_text.substr(tags_text.size() - 1, 1) != ",") {
+                                        tags_text += ", ";
+                                        }
+                                    tags_text += settings->image.at(sel_file).region.at(box_index).tag;
+                                    }
+                                textbuf->text(tags_text.c_str());
+                                edt_sdtags->redraw();
+                                }
+
+                            }
+                        redraw();
+
+                        }
+
+                    }
+
+                }
+            }
+        else {
+            if (Fl::event_button() == FL_LEFT_MOUSE) {
+                // update the origin
+                img_origin();
+                }
+            }
+        }
+    case FL_PUSH: {
+        // log keystrokes, so I can detect combinations
+        keycombo[1] = keycombo[0]; keycombo[0] = Fl::event_button();
+
+        if (keycombo[0] == FL_LEFT_MOUSE && (keycombo[1] == FL_Control_L || keycombo[1] == FL_Control_R)) {
+
+
+            if (!box_draw) {
+                box_draw = true;
+
+
+                // Set Write Flag
+                if (!bit::get(write_txt, 4)) {write_txt = bit::set(write_txt, 4, true);}
+
+                boxorg[0] = Fl::event_x();
+                boxorg[1] = Fl::event_y();
+                box_index = shp_image->children();
+
+
+                Resizeable* boxregion = (
+                    new Resizeable(boxorg[0], boxorg[1], 10, 10)
+                    );
+
+		if (bit::get(visiblity, 1)) {boxregion->show();} else {boxregion->hide();}
+                //                    boxregion->box(FL_NO_BOX);
+                boxregion->labelfont(5);
+
+
+                //                        boxregion->selection_color((Fl_Color)14);
+                //boxregion->image(G_cat);
+                boxregion->box(FL_NO_BOX);
+                //                        boxregion->color(Fl_Color(46));
+
+
+                boxregion->labelfont(5);
+                //boxregion->copy_label(tag_name.c_str());
+                //boxregion->callback((Fl_Callback*)tags_btn_update, (void*)boxregion->label());
+                shp_image->add(boxregion);
+                boxregion->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+                boxregion->when(FL_WHEN_RELEASE);
+                //        boxregion->resizable(shp_image);
+
+                //boxregion->copy_label(tag_name.c_str());
+                //boxregion->callback((Fl_Callback*)tags_btn_update, (void*)boxregion->label());
+                shp_image->add(boxregion);
+                box_index = shp_image->children() - 1;
+
+
+                shp_image->redraw();
+                boxregion->redraw();
+
+                // Create a new region, not sure I even have to given it a position??
+                float invzoom = 1.0f / imgzoom;
+
+                settings->add(
+                    region_data(
+                        10,
+                        10,
+                        (signed int)((float)((boxorg[0] + 5) - (shp_image->x() + (shp_image->w() / 2))) * invzoom),
+                            (signed int)((float)((boxorg[1] + 5) - (shp_image->y() + (shp_image->h() / 2))) * invzoom)
+                        )
+                    );
+
+                keycombo[1] = keycombo[0] = 0;
+                return 1; // returning a none 0, converts the push into a DRAG / RELEASE
+                }
+            keycombo[1] = keycombo[0] = 0;
+            }
+
+        // If Right Clicked
+        else if (box_draw == false && keycombo[0] == FL_RIGHT_MOUSE ) {
+
+        // Restore image to center of window widget
+        img_restore();
+
+        // Double Clicked, doesnt work need to clear it after a amount of time
+        //if (keycombo[1]) {std::cout << "double clocked\\n";}
+        }
+        // If Left Clicked
+        else if (box_draw == false && keycombo[0] == FL_LEFT_MOUSE ) {
+        // Set New Origin Point
+        img_origin();
+        }
+
+        break;
+        }
+    case FL_KEYDOWN: {
+        if (box_draw) {break;}
+        // store the last key strokes
+        if (debug) {std::cout << "IMAGE PRESS\\n";}
+        keycombo[1] = keycombo[0];
+        keycombo[0] = Fl::event_key();
+
+
+
+        break;
+        }
+    case FL_DRAG: {
+        if (box_draw && box_index > -1) {
+
+
+            Resizeable* boxregion = (Resizeable*)shp_image->child(box_index);
+            if (boxregion != nullptr) {
+                signed int boxpos[2] = {Fl::event_x(), Fl::event_y()};
+                signed int box_width = boxpos[0] - boxorg[0];
+                signed int box_height = boxpos[1] - boxorg[1];
+                signed int box_center[2] = {
+                    boxorg[0] + (box_width / 2),
+                    boxorg[1] + (box_height / 2)
+                    };
+
+                if (box_width < 0) {box_width = -box_width;}
+                if (box_height < 0) {box_height = -box_height;}
+
+                boxregion->resize(box_center[0] - (box_width / 2), box_center[1] - (box_height / 2), box_width, box_height);
+
+
+
+                // huh this doesn't even get called???? arg
+
+                float invzoom = 1.0f / imgzoom;
+
+                // Set Write Flag
+                if (!bit::get(write_txt, 4)) {write_txt = bit::set(write_txt, 4, true);}
+
+                //std::cout << "THIS: \\t" << box_index << " / " << settings->image.at(sel_file).region.size() << std::endl;
+                settings->edit(
+                    box_index,
+                    (signed int)((float)((boxregion->x() + (box_width / 2)) - (shp_image->x() + (shp_image->w() / 2))) * invzoom),
+                    (signed int)((float)((boxregion->y() + (box_height / 2)) - (shp_image->y() + (shp_image->h() / 2))) * invzoom),
+                    (signed int)((float)box_width * invzoom),
+                    (signed int)((float)box_height * invzoom)
+                    );
+
+
+                redraw_ui();
+                boxregion->redraw();
+                }
+            }
+        break;
+        }
+    case FL_KEYUP: {
+        keycombo[1] = keycombo[0] = 0;
+        if (box_draw) {break;}
+        if (debug) {std::cout << "IMAGE PRESS RELEASE\\n";}
+        // store the last key strokes
+        //            keycombo[1] = keycombo[0];
+        //            keycombo[0] = Fl::event_key();
+
+        break;
+        }
+    case FL_MOUSEWHEEL: {
+
+        if (box_draw) {break;}
+
+        // Bail, if nothing in image buffer
+        if (imgbuf == nullptr) {break;}
+
+        // check which widget the cursor's at
+        if (Fl::event_y() < edt_sdtags->y()) {
+
+            // Check if Control Key is was Pressed
+            if ( (keycombo[0] & FL_CTRL) || (keycombo[0] == FL_Control_L || keycombo[0] == FL_Control_R)) {
+
+                // Scale Image
+                img_scale();
+
+                // scale regions
+                Resizeable* box;
+
+                signed int img_center_x = shp_image->x() + (shp_image->w() / 2);
+                signed int img_center_y = shp_image->y() + (shp_image->h() / 2);
+                signed int rsize_w;
+                signed int rsize_h;
+                unsigned num_childs = shp_image->children();
+                for (unsigned int i = 0; i < num_childs; i++) {
+                    box = (Resizeable*)shp_image->child(i);
+
+                    // (old_coordinate_x - focus_point_around_which_scale_is_done_x)*scale_factor + focus_point_around_which_scale_is_done_x = new_coordinate_
+                    rsize_w  = (signed int)((float)settings->width(i) * imgzoom);
+                    rsize_h = (signed int)((float)settings->height(i) * imgzoom);
+
+                    box->position(
+                        (signed int)((float)((settings->posx(i) - (settings->width(i) * 0.5f)) * imgzoom) + img_center_x),
+                            (signed int)((float)((settings->posy(i) - (settings->height(i) * 0.5f)) * imgzoom) + img_center_y)
+                        );
+
+
+                    if (rsize_w > 0 && rsize_h > 1 && rsize_w >= imgmin_limit && rsize_h >= imgmin_limit && rsize_w <= imgmax_limit && rsize_h <= imgmax_limit) {
+                        box->size(
+                            rsize_w,
+                            rsize_h
+                            );
+
+                        }
+
+
+                    box->redraw();
+
+
+
+                    }
+
+                redraw_ui();
+
+                }
+            else {
+                // Save Text
+                save_txt();
+
+                // Add any Tags and Regions to the image database
+                /*
+                TO DO HERE WRITE FUNCTION TO MERGE DATABASE
+                */
+
+                // Load next Image in the directory from the files array
+                if (Fl::event_dy() > 0) {sel_file++;} else {sel_file--;}
+                if (sel_file < 0) {sel_file = 0;} else if ((unsigned)(sel_file + 1) > num_files) {sel_file = num_files - 1;}
+                settings->selected = sel_file;
+                load_image();
+                }
+            return 1;
+            }
+        break;
+        }
+    case FL_SHORTCUT: {
+        if (debug) { std::cout << "IMAGE MODIFIER\\n";}
+        keycombo[1] = keycombo[0];
+        keycombo[0] = Fl::event_key();
+
+
+
+        break;
+        }
+
+    // for debugging
+    default: {
+        //    if (mousecur != Fl_Cursor::FL_CURSOR_DEFAULT) {
+        //        mousecur = Fl_Cursor::FL_CURSOR_DEFAULT;
+        //        win_main->cursor(mousecur);
+        //        win_main->redraw();
+        //        }
+        //    keycombo[1] = keycombo[0];
+        //    keycombo[0] = 0;
+        //    printf("[%2d] MISSED = %2d = %s\\n", 0, e, fl_eventnames[e]);
+        //    fflush(stdout);
+        }
+    }
+return(Fl_Group::handle(e));} {}
+  }
+}
+
+Function {exitwindow()} {private return_type void
+} {
+  code {save_txt();
+
+if (imgbuf != nullptr) {delete imgbuf;}
+if (imgtmp != nullptr) {delete imgtmp;}
+
+
+//if (cat_xpm != nullptr) {delete cat_xpm;}
+//settings->unload();
+settings->close();
+
+exit(0);} {}
+}
+
+Function {keyhandler(int event)} {
+  comment {suppose to handle key press inputs globally
+however does not pick up all the inputs?
+to get more control you have to overload
+the event handler in each widget class.
+but seems I need to have first activated
+this global handler first for that to work??
+not sure, don't care, heres a global handler
+that doesn't do much :/} open return_type int
+} {
+  code {// static int n = 0; n++; n %= 100; // used for debugging inputs
+
+switch (event) {
+
+    // ignore
+    case FL_MOVE: {break;}
+    case FL_NO_EVENT: {break;}
+
+    // Need to respond to FOCUS events in order to handle keyboard
+    case FL_FOCUS: {return 1;} // RESPOND TO FOCUS/UNFOCUS
+    case FL_UNFOCUS: {         // RESPOND TO FOCUS/UNFOCUS
+        // interupt registered key combos... not sure I need this?
+        if (debug) {std::cout << "WINDOW FRAME EXIT\\n";}
+        keycombo[0] =  keycombo[1] = 0;
+        return 1;
+        }
+
+    // get positions of the mouse
+    case FL_DRAG: {
+        if (keycombo[0] == FL_LEFT_MOUSE && keycombo[1] != 17891328) {
+            img_move();
+            }
+        break;
+        }
+
+    // use for debugging inputs
+    //default: {
+    //    printf("[%2d] MISSED = %2d = %s\\n", 0, event, fl_eventnames[event]);
+    //    fflush(stdout);
+    //    }
+    }
+
+return event;} {}
+}
+
+comment {>>>>>>>>>>>       CALL BACKS       <<<<<<<<<<<<} {in_source in_header
+}
+
+Function {split_images_into_subfolders(Fl_Widget* o, void* userdata)} {private return_type void
+} {
+  code {if (!os::doesFileExistW(work_path)) {
+    fl_choice("Path Not Set", "OK", 0, 0);
+    return;
+    }
+const char *sp = static_cast<const char*>(userdata);
+const char val = *sp;
+bool good = false;
+switch (val) {
+    case '1': {
+        // move images and text based on a tag within the text
+        const char* input = fl_input("Type Tags to Search and use to Move");
+        if (input != nullptr) {
+            moveTagsFromPath(work_path, (std::string)input);
+            good = true;
+            }
+        break;
+        }
+    case '2': {
+        // move images and text based on the images dimension
+        binMaps(work_path);
+        good = true;
+        break;
+        }
+    }
+// Open Path
+if (good) {
+    fl_choice("Files Moved, Check Folder", "OK", 0, 0);
+    os::openPathW(work_path);
+    };
+
+// clean up pointer?
+//delete sp;} {}
+}
+
+Function {modify_tags_in_path(Fl_Widget* o, void* userdata)} {private return_type void
+} {
+  code {if (!os::doesFileExistW(work_path)) {
+    fl_choice("Path Not Set", "OK", 0, 0);
+    return;
+    }
+const char *sp = static_cast<const char*>(userdata);
+const char val = *sp;
+std::string outmsg = "";
+switch (val) {
+    case '0': { // collect all tags from folder and print to file
+        getTagsFromPathOfTxt(work_path);
+        break;
+        }
+    case '1': { // add a tag to all text files in path
+        const char* input = fl_input("Type Tags to merge into text files");
+        if (input != nullptr) {
+            addTagsToPath(work_path, (std::string)input);
+            outmsg = "Tags Merged, Check Folder";
+            }
+        break;
+        }
+    case '2': { // delete a tag to all text files in path
+        const char* input = fl_input("Type Tags to remove from text files");
+        if (input != nullptr) {
+            removeTagsFromPath(work_path, (std::string)input, false);
+            outmsg = "Tags Deleted, Check Folder";
+            }
+        break;
+        }
+    case '3': { // replace a tag to all text files in path
+        const char* input_find = fl_input("Type Tags to search for");
+        std::string findStr = input_find;
+        if (input_find != nullptr) {
+            const char* input_replacement = fl_input("Type text to replace tags with");
+            std::string newStr = input_replacement;
+            if (input_replacement != nullptr) {
+                ReplaceTagsInPath(work_path, findStr, newStr);
+                outmsg = "Tags Replaced, Check Folder";
+                }
+            }
+        break;
+        }
+    case '4': { // overwrite text files entirely
+        const char* input = fl_input("Type Tags to create new tag files with");
+        if (input != nullptr) {
+            overwriteTagsInPath(work_path, (std::string)input);
+            outmsg = "Tags Overwritten, Check Folder";
+            }
+        break;
+        }
+    }
+
+// Open Path
+if (outmsg != "") {
+    fl_choice(outmsg.c_str(), "OK", 0, 0);
+    os::openPathW(work_path);
+    };
+
+// clean up pointer?
+//delete sp;} {}
+}
+
+Function {img_fullsize(Fl_Widget* o, void* userdata)} {private return_type void
+} {
+  code {imgzoom = 1.0f;
+img_rescale();
+redraw_ui();} {}
+}
+
+Function {img_bigger(Fl_Widget* o, void* userdata)} {private return_type void
+} {
+  code {imgzoom *= 1.1f;
+if (imgzoom < 0.1f) {imgzoom = 0.1f;}
+else if (imgzoom > 2.0f) {imgzoom = 2.0f;}
+
+img_rescale();
+redraw_ui();} {}
+}
+
+Function {img_smaller(Fl_Widget* o, void* userdata)} {open private return_type void
+} {
+  code {imgzoom *= 0.9f;
+if (imgzoom < 0.1f) {imgzoom = 0.1f;}
+else if (imgzoom > 2.0f) {imgzoom = 2.0f;}
+
+img_rescale();
+redraw_ui();} {}
+}
+
+Function {img_lockzoom(Fl_Widget* o, void* userdata)} {private return_type void
+} {
+  code {imgfit = bit::flip(imgfit, 1);} {}
+}
+
+Function {toggle_imgfit(Fl_Widget* o, void* userdata)} {private return_type void
+} {
+  code {const char *sp = static_cast<const char*>(userdata);
+const char val = *sp;
+switch (val) {
+    case '2': {
+        imgfit = bit::flip(imgfit, 2);
+        Fl_Multi_Label *ml = (Fl_Multi_Label*)chk_shrink->label();
+        //std::string oldlabel = ml->labelb;
+        if (bit::get(imgfit, 2)) {chk_shrink->image(icon_checked());}
+        else                     {chk_shrink->image(icon_unchecked());}
+        //ml->typea  = _FL_IMAGE_LABEL;
+        if (bit::get(imgfit, 2)) {ml->labela = (const char*)icon_checked();}
+        else                     {ml->labela = (const char*)icon_unchecked();}
+        //ml->typeb  = FL_NORMAL_LABEL;
+        //ml->labelb = (char*)oldlabel.c_str();
+        //ml->label(chk_shrink);
+        chk_shrink->label(_FL_MULTI_LABEL , (const char *)ml);
+        //ml->label(chk_shrink);
+        break;
+        }
+    case '3': {
+        imgfit = bit::flip(imgfit, 3);
+        Fl_Multi_Label *ml = (Fl_Multi_Label*)chk_grow->label();
+        //std::string oldlabel = ml->labelb;
+        if (bit::get(imgfit, 3)) {chk_grow->image(icon_checked());}
+        else                     {chk_grow->image(icon_unchecked());}
+        //ml->typea  = _FL_IMAGE_LABEL;
+        if (bit::get(imgfit, 3)) {ml->labela = (const char*)icon_checked();}
+        else                     {ml->labela = (const char*)icon_unchecked();}
+        //ml->typeb  = FL_NORMAL_LABEL;
+        //ml->labelb = (char*)oldlabel.c_str();
+        //ml->label(chk_grow);
+        chk_grow->label(_FL_MULTI_LABEL , (const char *)ml);
+        //ml->label(chk_grow);
+        break;
+        }
+    }
+img_resize();
+img_rescale();
+redraw_ui();
+delete sp;} {}
+}
+
+Function {mnu_set_path()} {private return_type void
+} {
+  code {const char* input = fl_input("please type new path", unicode_to_utf8(work_path).c_str());
+if (input != nullptr) {
+	std::string tmp = std::string(input);
+	std::wstring new_path = utf8_2_unicode(tmp);
+	if (new_path.size() > 0) {
+
+		if (new_path.substr(new_path.size() - 1, 1) != L"\\\\" || new_path.substr(new_path.size() - 1, 1) != L"/") {
+			new_path += L"\\\\";
+			}
+		if (os::doesFileExistW(new_path)) {
+			work_path = new_path;
+			}
+		else {fl_choice("Failed to Set Path", "OK", 0, 0);}
+		}
+	}} {}
+}
+
+Function {mnu_delete_event()} {private return_type void
+} {
+  code {// check that image selection from directory is valid
+if (!isSelectionValid()) {
+	std::cout << "error failed to delete, sel_file out of bounds [" << sel_file << ": " << filesW.size() << "]" << std::endl;
+	return;
+	}
+switch ( fl_choice("Permanently Delete File?", "OK", "Cancel", 0) ) {
+	case 0: {
+		if (num_files > 0) {
+			os::deleteFileW(filesW.at(sel_file));
+			filesW.erase(filesW.begin() + sel_file);
+			num_files--;
+			if (sel_file > 0) {sel_file--;} else if (num_files > 0) {sel_file = num_files - 1;}
+			settings->selected = sel_file;
+			load_image();
+			redraw_ui();
+			}
+		break;
+		}
+	case 1: {break;} // no
+	}} {}
+}
+
+Function {mnu_rename_event()} {private return_type void
+} {
+  code {// check that image selection from directory is valid
+if (!isSelectionValid()) {
+	std::cout << "error failed to rename, sel_file out of bounts [" << sel_file << ": " << filesW.size() << "]" << std::endl;
+	return;
+	}
+
+// get name of current file and convert it from wide char to utf8
+std::string str = unicode_to_utf8(getFilename::FromPathW(filesW.at(sel_file)));
+std::wstring fext = toLowerW(getFilename::TypeW(filesW.at(sel_file)));
+
+// prompt user for input
+const char* input = fl_input("Rename File", str.c_str());
+
+// check input was given
+if (input != nullptr) {
+
+	// convert utf8 input back to wide char
+	str = input;
+	std::wstring wstr = utf8_2_unicode(str);
+
+	// add file extension if not already in new name
+	std::wstring tmp = toLowerW(getFilename::TypeW(wstr));
+	if (fext != tmp) {wstr += fext;}
+
+	// rename file
+	tmp = getFilename::PathW(filesW.at(sel_file)) + wstr;
+	//std::wcout << L"NEW FILE: \\t" << tmp << std::endl;
+	os::renameFileW(filesW.at(sel_file), tmp);
+	filesW.at(sel_file) = tmp;
+	str = unicode_to_utf8(wstr);
+	lb_file->value(str.c_str());
+	SetWindowTextW(xid, wstr.c_str());
+	}} {}
+}
+
+Function {mnu_autosavetxt_event()} {private return_type void
+} {
+  code {write_txt = bit::flip(write_txt, 1);
+Fl_Multi_Label *ml = (Fl_Multi_Label*)mnu_autosavetxt->label();
+if (bit::get(write_txt, 1)) {mnu_autosavetxt->image(icon_checked());}
+else                        {mnu_autosavetxt->image(icon_unchecked());}
+if (bit::get(write_txt, 1)) {ml->labela = (const char*)icon_checked();}
+else                        {ml->labela = (const char*)icon_unchecked();}
+mnu_autosavetxt->label(_FL_MULTI_LABEL , (const char *)ml);} {}
+}
+
+Function {mnu_content_event()} {private return_type void
+} {
+  code {fl_message(
+	"F1            \\t: Help\\n"
+	"F3            \\t: Auto Shrink\\n"
+	"F4            \\t: Auto Enlarge\\n"
+	"F2            \\t: Rename Open File\\n"
+	"Ctrl+D        \\t: Delete Open File\\n"
+	"Ctrl+G        \\t: Go To Image Index\\n"
+	"HOME          \\t: Go To First Image\\n"
+	"END           \\t: Go To Last Image\\n"
+	"Ctrl+O        \\t: Open\\n"
+	"Escape        \\t: Close App\\n"
+	"LMB+Drag      \\t: Pan Image\\n"
+	"RightClick    \\t: Reset Position\\n"
+	"Scroll        \\t: Cycle Images\\n"
+	"Alt +LMB      \\t: Delete Region\\n"
+	"DoubleClickLMB\\t: Rename Region\\n"
+	"Ctrl+LMB      \\t: Add Region\\n"
+	"Ctrl+Scroll   \\t: Zoom in / Out\\n"
+	"Ctrl+PageUp   \\t: Zoom In\\n"
+	"Ctrl+PageDown \\t: Zoom Out\\n"
+	"Ctrl+Home     \\t: Reset Zoom\\n"
+	"Ctrl+End      \\t: Lock Zoom\\n\\n"
+	"* LMB = Left   Mouse Button\\n"
+	"* MMB = Middle Mouse Button\\n"
+	"* RMB = Right  Mouse Button"
+	);} {}
+}
+
+Function {mnu_about_event()} {private return_type void
+} {
+  code {fl_message(
+	"Image Viewer (IMV)\\n\\n"
+	"Interface created using FLTK (https://www.fltk.org)\\n"
+	"Opens BMP/JPG/PNG using the support in FLTK.\\n\\n"
+	"Top pane views images and the bottom pane allows\\n"
+	"for text input to assist in stable diffusion tagging.\\n\\n"
+	"Text files are saved in the same path as the images\\n"
+	"and is automatically saved when the app is closed\\n"
+	"or another image is loaded.\\n\\n"
+	"Written by Corey Ngueyn (March 9 2023)"
+	);} {}
+}
+
+Function {mnu_goto_event()} {private return_type void
+} {
+  code {// Check that file is loaded
+if (sel_file < 0 || imgbuf == nullptr || num_files < 1) {return; }
+
+// get current image index
+std::string str = to_string(sel_file + 1);
+
+// prompt user for input
+const char* input = fl_input("Jump to Image \#", str.c_str());
+
+// check input was given
+if (input != nullptr) {
+
+	// convert intput into an int
+	unsigned int goto_index = convert_to<unsigned int>(std::string(input));
+
+	// Validate new Index
+	if (goto_index > filesW.size() || goto_index < 1) {return;}
+	sel_file = goto_index - 1;
+	settings->selected = sel_file;
+
+	// Load Image
+	load_image();
+	}} {}
+}
+
+Function {mnu_showregions_event()} {private return_type void
+} {
+  code {unsigned int num_regions = shp_image->children();
+if (num_regions == 0) {return;}
+bool hide = !bit::get(visiblity, 1);
+visiblity = bit::set(visiblity, 1, hide);
+Fl_Multi_Label *ml = (Fl_Multi_Label*)mnu_showregions->label();
+visiblity = bit::set(visiblity, 1, hide);
+if (!hide) {
+    mnu_showregions->image(icon_unchecked());
+    ml->labela = (const char*)icon_unchecked();
+    }
+else {
+    mnu_showregions->image(icon_checked());
+    ml->labela = (const char*)icon_checked();
+    }
+mnu_showregions->label(_FL_MULTI_LABEL , (const char *)ml);
+for (unsigned int i = 0; i < num_regions; i++) {
+    Resizeable* boxregion = (Resizeable*)shp_image->child(i);
+    if (!hide) {
+        boxregion->hide();
+        }
+    else {
+        boxregion->show();
+        }
+    }} {}
+}
+
+Function {mnu_showeditor_event()} {private return_type void
+} {
+  code {Fl_Multi_Label *ml = (Fl_Multi_Label*)mnu_showeditor->label();
+if (bit::get(visiblity, 2)) {
+    // Hide
+
+    // Change Icon in Menu
+    mnu_showeditor->image(icon_unchecked());
+    ml->labela = (const char*)icon_unchecked();
+
+    // resize the image and editor panels
+
+    //tile_info->position(0, 50, 15, 88);
+
+    // image pane
+    tile_view->size(tile_info->w(), lb_statusbar->y() - tile_view->y());
+    //tile_edit->resize(0,  lb_statusbar->y(), tile_view->w(), 0);
+    tile_edit->position(0, lb_statusbar->y());
+
+
+    //tile_edit->hide();
+
+    }
+else {
+    // SHOW
+
+    // Change Icon
+    mnu_showeditor->image(icon_checked());
+    ml->labela = (const char*)icon_checked();
+
+
+    // resize the image pane
+    //tile_info->position(0, 50, 15, 88);
+
+    tile_view->size(win_main->w(), win_main->h() * 0.71875);
+    tile_edit->resize(0, tile_view->y() + tile_view->h(), tile_view->w(), lb_statusbar->y() - (tile_view->y() + tile_view->h()));
+
+    //tile_edit->show();
+    }
+visiblity = bit::set(visiblity, 2, !bit::get(visiblity, 2));
+mnu_showeditor->label(_FL_MULTI_LABEL , (const char *)ml);
+redraw_ui();} {}
+}
+
+Function {mnu_showtags_event()} {private return_type void
+} {
+  code {Fl_Multi_Label *ml = (Fl_Multi_Label*)mnu_showtags->label();
+if (tag_sidebar_pack->visible()) {
+    mnu_showtags->image(icon_unchecked());
+    ml->labela = (const char*)icon_unchecked();
+    tag_sidebar_pack->hide();
+    visiblity = bit::set(visiblity, 3, false);
+    }
+else {
+    mnu_showtags->image(icon_checked());
+    ml->labela = (const char*)icon_checked();
+    tag_sidebar_pack->show();
+    tag_sidebar_pack->resize(0, 20, win_main->w() * 0.25, shp_image->h());
+    visiblity = bit::set(visiblity, 3, true);
+    }
+mnu_showtags->label(_FL_MULTI_LABEL , (const char *)ml);} {}
+}
+
+Function {mnu_goto_start_event()} {private return_type void
+} {
+  code {if (!isSelectionValid() || filesW.size() <= 1) {return;}
+
+// Save Text
+save_txt();
+
+// Load next Image in the directory from the files array
+sel_file=0;
+settings->selected = sel_file;
+load_image();} {}
+}
+
+Function {mnu_goto_end_event()} {private return_type void
+} {
+  code {if (!isSelectionValid() || sel_file + 1 >= filesW.size() || filesW.size() <= 1) {return;}
+
+// Save Text
+save_txt();
+
+// Load next Image in the directory from the files array
+sel_file=filesW.size()-1;
+settings->selected = sel_file;
+load_image();} {}
+}
+
+Function {mnu_goto_next_event()} {private return_type void
+} {
+  code {if (!isSelectionValid()) {return;}
+
+// Save Text
+save_txt();
+
+// Load next Image in the directory from the files array
+sel_file++;
+if (sel_file < 0) {sel_file = 0;} else if ((unsigned)(sel_file + 1) > num_files) {sel_file = num_files - 1;}
+settings->selected = sel_file;
+load_image();} {}
+}
+
+Function {mnu_goto_last_event()} {private return_type void
+} {
+  code {if (!isSelectionValid()) {return;}
+
+// Save Text
+save_txt();
+
+// Load next Image in the directory from the files array
+sel_file--;
+if (sel_file < 0) {sel_file = 0;} else if ((unsigned)(sel_file + 1) > num_files) {sel_file = num_files - 1;}
+settings->selected = sel_file;
+load_image();} {}
+}
+
+Function {mnu_export_region_event()} {private return_type void
+} {
+  code {Fl_Multi_Label *ml = (Fl_Multi_Label*)mnu_showeditor->label();
+if (bit::get(visiblity, 2)) {
+    // Hide
+
+    // Change Icon in Menu
+    mnu_showeditor->image(icon_unchecked());
+    ml->labela = (const char*)icon_unchecked();
+
+    // resize the image and editor panels
+
+    //tile_info->position(0, 50, 15, 88);
+
+    // image pane
+    tile_view->size(tile_info->w(), lb_statusbar->y() - tile_view->y());
+    //tile_edit->resize(0,  lb_statusbar->y(), tile_view->w(), 0);
+    tile_edit->position(0, lb_statusbar->y());
+
+
+    //tile_edit->hide();
+
+    }
+else {
+    // SHOW
+
+    // Change Icon
+    mnu_showeditor->image(icon_checked());
+    ml->labela = (const char*)icon_checked();
+
+
+    // resize the image pane
+    //tile_info->position(0, 50, 15, 88);
+
+    tile_view->size(win_main->w(), win_main->h() * 0.71875);
+    tile_edit->resize(0, tile_view->y() + tile_view->h(), tile_view->w(), lb_statusbar->y() - (tile_view->y() + tile_view->h()));
+
+    //tile_edit->show();
+    }
+visiblity = bit::set(visiblity, 2, !bit::get(visiblity, 2));
+mnu_showeditor->label(_FL_MULTI_LABEL , (const char *)ml);
+redraw_ui();} {}
+}
+
+Function {mnu_recent_file_event(Fl_Widget* o, void* userdata)} {private return_type void
+} {
+  code {// lol i dont know what this is doing, i did some random stuff and it works oof
+unsigned int i = convert_to<unsigned int>(std::string(&*(const char *)(static_cast<const char*>(userdata))));
+
+if (settings != nullptr && settings->recents.size() > 0 && i < settings->recents.size() && settings->recents.at(i).size() > 0) {
+    read_image(settings->recents.at(i));
+    }} {}
+}
+
+Function {btn_open_pressed()} {} {
+  code {Fl_Native_File_Chooser fnfc;
+fnfc.title("Pick a file");
+fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+fnfc.filter("Supported Files\\t*.bmp;*.jpg;*.png\\nWindows Bitmap\\t*.bmp\\nJoint Photo Group\\t*.jpg\\nPortable Network Graphic\\t*.png\\n");
+fnfc.directory("/var/tmp");           // default directory to use
+
+// Show native chooser
+switch ( fnfc.show() ) {
+    case -1: printf("ERROR: %s\\n", fnfc.errmsg());    break;  // ERROR
+    case  1: printf("CANCEL\\n");                      break;  // CANCEL
+    default: {read_image(fnfc.filename());}                   // FILE CHOSEN
+    }} {}
+}
+
+Function {mnu_exit()} {private return_type void
+} {
+  code {exitwindow();} {}
+}
+
+comment {>>>>>>>>>>>     MAIN INTERFACE      <<<<<<<<<<<<} {in_source in_header
+}
+
+Function {make_window()} {open
+} {
+  code {init_database();} {}
+  Fl_Window win_main {
+    label {IMV v0.1}
+    callback exitwindow open
+    xywh {2881 210 640 480} type Double color 16 resizable
+    code0 {o->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));}
+    code1 {Fl::scheme("gtk+");}
+    code2 {o->show();}
+    code3 {get_init_theme(fl_xid(o)); toggle_theme();} size_range {640 480 0 0} visible
+  } {
+    Fl_Tile tile_info {open
+      xywh {-20 20 660 443} box FLAT_BOX color 14 resizable
+    } {
+      Fl_Group tile_view {open
+        xywh {0 20 640 345} box PLASTIC_UP_BOX color 20
+        code0 {tile_view->resizable((Fl_Widget*)0); // no resizing}
+        class Fl_GroupDC
+      } {
+        Fl_Box shp_image {
+          xywh {0 20 640 345} color 48
+          class Fl_GroupDC
+        }
+      }
+      Fl_Group tile_edit {open
+        xywh {0 365 640 98} box GTK_UP_BOX color 47
+      } {
+        Fl_Text_Editor edt_sdtags {
+          xywh {0 365 640 98} box ENGRAVED_BOX color 48
+          code0 {textbuf = new Fl_Text_Buffer;}
+          code1 {o->buffer(textbuf); o->textsize(edt_font_size);}
+          code2 {o->show_insert_position();}
+          code3 {o->wrap_mode(Fl_Wrap::WRAP_AT_BOUNDS, 0);}
+          class Fl_Text_EditorDC
+        }
+      }
+      Fl_Scroll tag_sidebar {open
+        xywh {0 20 160 345} color 12 align 17
+        code0 {tag_sidebar->type(Fl_Scroll::VERTICAL); // disable scrollbars}
+        code1 {tag_sidebar->scrollbar_size( -1 ); // hide the scroll bars}
+        code2 {tag_sidebar->scrollbar.box(FL_NO_BOX); tag_sidebar->hscrollbar.box(FL_NO_BOX); tag_sidebar->box(FL_NO_BOX);}
+        code3 {tag_sidebar->scrollbar.align(4); // hide scroll bar to the left}
+        class Fl_ScrollDC
+      } {
+        Fl_Pack tag_sidebar_pack {open
+          xywh {0 20 160 345}
+        } {}
+      }
+    }
+    Fl_Group lb_statusbar {open
+      xywh {0 460 640 25}
+    } {
+      Fl_Output lb_page {
+        xywh {0 462 85 18} box EMBOSSED_BOX align 1
+      }
+      Fl_Output lb_file {
+        xywh {85 462 175 18} box EMBOSSED_BOX align 1
+      }
+      Fl_Output lb_fsize {
+        xywh {260 462 75 18} box EMBOSSED_BOX align 1
+      }
+      Fl_Output lb_info {
+        xywh {335 462 150 18} box EMBOSSED_BOX align 1
+      }
+      Fl_Output lb_zoom {
+        xywh {485 462 40 18} box EMBOSSED_BOX align 1
+      }
+      Fl_Output lb_loadtime {
+        xywh {525 462 115 18} box EMBOSSED_BOX align 1
+      }
+    }
+    Fl_Menu_Bar mnu_bar {
+      label {Recent Files} open
+      xywh {0 0 640 20}
+    } {
+      Submenu {} {
+        label {&File} open
+        xywh {0 0 62 20}
+      } {
+        MenuItem {} {
+          label {&Open}
+          callback btn_open_pressed
+          xywh {0 0 30 20} shortcut 0x4006f
+          code0 {add_multi_label(o, icon_open());}
+        }
+        Submenu {} {
+          label {&Recent Files} open
+          xywh {0 0 62 20}
+        } {
+          MenuItem itm_recents0 {
+            label {&1.) }
+            user_data {"0"}
+            callback mnu_recent_file_event
+            xywh {0 0 30 20} shortcut 0x30
+          }
+          MenuItem itm_recents1 {
+            label {&2.) }
+            user_data {"1"}
+            callback mnu_recent_file_event
+            xywh {10 10 30 20} shortcut 0x31
+          }
+          MenuItem itm_recents2 {
+            label {&3.) }
+            user_data {"2"}
+            callback mnu_recent_file_event
+            xywh {20 20 30 20} shortcut 0x32
+          }
+          MenuItem itm_recents3 {
+            label {&4.) }
+            user_data {"3"}
+            callback mnu_recent_file_event
+            xywh {30 30 30 20} shortcut 0x33
+          }
+          MenuItem itm_recents4 {
+            label {&5.) }
+            user_data {"4"}
+            callback mnu_recent_file_event
+            xywh {40 40 30 20} shortcut 0x34
+          }
+          MenuItem itm_recents5 {
+            label {&6.) }
+            user_data {"5"}
+            callback mnu_recent_file_event
+            xywh {50 50 30 20} shortcut 0x35
+          }
+          MenuItem itm_recents6 {
+            label {&7.) }
+            user_data {"6"}
+            callback mnu_recent_file_event
+            xywh {60 60 30 20} shortcut 0x36
+          }
+          MenuItem itm_recents7 {
+            label {&8.) }
+            user_data {"7"}
+            callback mnu_recent_file_event
+            xywh {70 70 30 20} shortcut 0x37
+          }
+          MenuItem itm_recents8 {
+            label {&9.) }
+            user_data {"8"}
+            callback mnu_recent_file_event
+            xywh {80 80 30 20} shortcut 0x38
+          }
+          MenuItem itm_recents9 {
+            label {&10.) }
+            user_data {"9"}
+            callback mnu_recent_file_event
+            xywh {90 90 30 20} shortcut 0x39
+          }
+        }
+        MenuItem {} {
+          label {&Exit}
+          callback mnu_exit
+          xywh {10 10 30 20} shortcut 0xff1b
+          code0 {add_multi_label(o, icon_exit());}
+        }
+      }
+      Submenu {} {
+        label {&Edit} open
+        xywh {10 10 62 20}
+      } {
+        MenuItem {} {
+          label {&Rename}
+          callback mnu_rename_event
+          xywh {10 10 30 20} shortcut 0xffbf
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Delete}
+          callback mnu_delete_event
+          xywh {90 90 30 20} shortcut 0x40064 divider
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem mnu_autosavetxt {
+          label {&Auto Save Txt}
+          callback mnu_autosavetxt_event
+          xywh {15 15 30 20}
+          code0 {add_multi_label(o, icon_checked());}
+        }
+      }
+      Submenu {} {
+        label {&View} open
+        xywh {20 20 62 20}
+      } {
+        MenuItem mnu_showregions {
+          label {Show &Regions}
+          callback mnu_showregions_event
+          xywh {25 25 30 20}
+          code0 {add_multi_label(o, icon_checked());}
+        }
+        MenuItem mnu_showeditor {
+          label {Show &Editor}
+          callback mnu_showeditor_event
+          xywh {35 35 30 20}
+          code0 {add_multi_label(o, icon_checked());}
+        }
+        MenuItem mnu_showtags {
+          label {Show &Tags Pane}
+          callback mnu_showtags_event
+          xywh {45 45 30 20} divider
+          code0 {add_multi_label(o, icon_checked());}
+        }
+        MenuItem {} {
+          label {&More}
+          callback img_bigger
+          xywh {20 20 30 20} shortcut 0x4ff55
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Less}
+          callback img_smaller
+          xywh {30 30 30 20} shortcut 0x4ff56 divider
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Best Fit}
+          xywh {40 40 30 20}
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Actual Size}
+          callback img_fullsize
+          xywh {50 50 30 20} shortcut 0x4ff50
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {Loc&k}
+          callback img_lockzoom
+          xywh {60 60 30 20} shortcut 0x4ff57 divider
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem chk_shrink {
+          label {Auto &Shrink to Fit}
+          user_data {"2"}
+          callback toggle_imgfit
+          xywh {70 70 30 20} shortcut 0xffc0
+          code0 {add_multi_label(o, icon_unchecked());}
+        }
+        MenuItem chk_grow {
+          label {Auto &Enlarge to Fit}
+          user_data {"3"}
+          callback toggle_imgfit
+          xywh {80 80 30 20} shortcut 0xffc1 divider
+          code0 {add_multi_label(o, icon_unchecked());}
+        }
+        MenuItem {} {
+          label {&Go to \#}
+          callback mnu_goto_event
+          xywh {10 10 30 20} shortcut 0x40067
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Next}
+          callback mnu_goto_next_event
+          xywh {20 20 30 20} shortcut 0x2e
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Previous}
+          callback mnu_goto_last_event
+          xywh {30 30 30 20} shortcut 0x2c
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&First}
+          callback mnu_goto_start_event
+          xywh {30 30 30 20} shortcut 0xff50
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Last}
+          callback mnu_goto_end_event
+          xywh {40 40 30 20} shortcut 0xff57
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+      }
+      Submenu {} {
+        label {&Manage} open
+        xywh {30 30 62 20}
+      } {
+        MenuItem {} {
+          label {&Set Path}
+          callback mnu_set_path
+          xywh {50 50 30 20}
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Batch Rename}
+          callback batch_rename
+          xywh {40 40 30 20}
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {Move to Folder by &Tag}
+          user_data {"1"}
+          callback split_images_into_subfolders
+          xywh {70 70 30 20}
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {Move to Folder by &Dimension}
+          user_data {"2"}
+          callback split_images_into_subfolders
+          xywh {30 30 30 20} divider
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Collect all Tags from Path}
+          user_data {"0"}
+          callback modify_tags_in_path
+          xywh {50 50 30 20}
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Add Tags in Path}
+          user_data {"1"}
+          callback modify_tags_in_path
+          xywh {80 80 30 20}
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Delete Tags in Path}
+          user_data {"2"}
+          callback modify_tags_in_path
+          xywh {70 70 30 20}
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Replace Tags in Path}
+          user_data {"3"}
+          callback modify_tags_in_path
+          xywh {60 60 30 20}
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&Overwrite Tags in Path}
+          user_data {"4"}
+          callback modify_tags_in_path
+          xywh {90 90 30 20} divider
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem mnu_export_region {
+          label {&Export Regions}
+          callback mnu_export_region_event
+          tooltip {exports images of any defined regions} xywh {100 100 30 20}
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+      }
+      Submenu {} {
+        label {&About} open
+        xywh {30 30 62 20}
+      } {
+        MenuItem {} {
+          label {&Contents}
+          callback mnu_content_event
+          xywh {30 30 30 20} shortcut 0xffbe
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+        MenuItem {} {
+          label {&About}
+          callback mnu_about_event
+          xywh {40 40 30 20} divider
+          code0 {add_multi_label(o, icon_dummy());}
+        }
+      }
+    }
+  }
+}
