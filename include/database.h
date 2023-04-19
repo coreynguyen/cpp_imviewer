@@ -268,6 +268,10 @@ public:
 
     bool writeCSV (std::string file, signed int index = -1);
 
+    std::vector<region_data> readRegionCSV (std::wstring file, std::string delimiter = ",");
+
+    bool writeRegionCSV (std::wstring file, std::vector<region_data> array_of_regions);
+
 private:
 
 

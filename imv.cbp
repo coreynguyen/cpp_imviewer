@@ -75,8 +75,7 @@
 		<Unit filename="include/bytestream.h" />
 		<Unit filename="include/database.h" />
 		<Unit filename="include/filesystem.h" />
-		<Unit filename="include/fmtJOB.h" />
-		<Unit filename="include/recipe.h" />
+		<Unit filename="include/phash.h" />
 		<Unit filename="include/resource.h" />
 		<Unit filename="include/scriptini.h" />
 		<Unit filename="include/stringenc.h" />
@@ -87,9 +86,12 @@
 		<Unit filename="src/bytestream.cpp" />
 		<Unit filename="src/database.cpp" />
 		<Unit filename="src/filesystem.cpp" />
-		<Unit filename="src/fmtJOB.cpp" />
 		<Unit filename="src/icon.rc">
 			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="src/phash.cpp">
+			<Option compile="0" />
+			<Option link="0" />
 		</Unit>
 		<Unit filename="src/scriptini.cpp" />
 		<Unit filename="src/stringenc.cpp" />

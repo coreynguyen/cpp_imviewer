@@ -42,6 +42,7 @@ Fl_Image* imgtmp = nullptr;
 int keycombo[2] = {0, 0 };
 int imgorg[2] = {0, 0 };
 int imgpos[2] = {0, 0 };
+std::vector<std::string> global_tags;
 const unsigned int num_img_types = 6;
 const std::wstring knownTypes[num_img_types] = {L".jpg", L".jpeg", L".bmp", L".png", L".txt" L".csv"};
 // FLTK Headers
@@ -224,6 +225,10 @@ bool is_light_theme() {
 }
 // >>>>>>>>>>>     HELPER  FUNCTIONS      <<<<<<<<<<<<
 
+
+
+
+
 std::string md5(const char* &message, unsigned long len, unsigned long start_pos ) {
   /*
       used to generate an identity for the image
@@ -359,7 +364,7 @@ std::string md5(const char* &message, unsigned long len, unsigned long start_pos
 
 static std::vector<std::string> getDelimitedTags(std::string str, bool culltag , bool sorttags ) {
     std::vector<std::string> tags = split(str, ",");
-
+    //std::cout << "Tags: \t" << str << std::endl;
     unsigned int num_tags = tags.size();
     if (num_tags > 0) {
         for (unsigned int i = 0; i < num_tags; i++) {
@@ -373,7 +378,7 @@ static std::vector<std::string> getDelimitedTags(std::string str, bool culltag ,
             for (unsigned int i = 0; i < num_tags; i++) {
                 if (std::find(tmp.begin(), tmp.end(), tags.at(i)) == tmp.end()) {
                     tmp.push_back(tags.at(i));
-                    }
+                    }// else {std::cout << "Duplicate: \t" << tags.at(i) << std::endl;}
                 }
             return tmp;
             }
@@ -488,7 +493,7 @@ static void img_rescale() {
       case Fl_Image::ERR_NO_IMAGE:
       case Fl_Image::ERR_FILE_ACCESS: {
           strerror_s(errMsg, errMsgLen, errno);
-          fl_alert("%s: %s", "FLIE", errMsg); break;
+          fl_alert("%s: %s", "FLIE", std::string(errMsg).c_str()); break;
 
 
           if (errMsg != nullptr) {
@@ -555,7 +560,7 @@ static void img_scale() {
       case Fl_Image::ERR_NO_IMAGE:
       case Fl_Image::ERR_FILE_ACCESS: {
           strerror_s(errMsg, errMsgLen, errno);
-          fl_alert("%s: %s", "FLIE", errMsg); break;
+          fl_alert("%s: %s", "FLIE", std::string(errMsg).c_str()); break;
           if (errMsg != nullptr) {
               delete errMsg;
               }
@@ -574,100 +579,111 @@ static void img_scale() {
 }
 
 static void tags_btn_update(Fl_Widget* o, void* userdata) {
-  // Set Write Flag
-  if (bit::get(write_txt, 2) == false) {write_txt = bit::set(write_txt, 2, true);}
 
-  const char* sp = static_cast<char*>(userdata);
+    // Set Write Flag
+    if (bit::get(write_txt, 2) == false) {
+        write_txt = bit::set(write_txt, 2, true);
+        }
 
-  std::string tags_text = textbuf->text();
-  //std::cout << "TextBuffer: \t" << tags_text << std::endl;
-  Fl_Light_Button* lbtn = (Fl_Light_Button*)o;
+    const char* sp = static_cast<char*>(userdata);
 
-  bool state = (bool)lbtn->value();
-  if (state) {
-      tags_text+=", " + std::string(sp);
-      }
-  else {
-      std::string tmp = std::string(sp);
-      unsigned int x = tags_text.find(tmp);
-      if (x != std::string::npos) {
-          tags_text.erase(x, tmp.size());
-          }
-      }
+    std::string tags_text = textbuf->text();
+    //std::cout << "TextBuffer: \t" << tags_text << std::endl;
+    Fl_Light_Button* lbtn = (Fl_Light_Button*)o;
 
-  std::vector<std::string> ss = split(tags_text, ",");
-  unsigned int num_split_tags = ss.size();
-  for (unsigned int i = 0; i < num_split_tags; i++) {
-      ss.at(i) = trim(ss.at(i), " ");
-      ss.at(i) = trim(ss.at(i), "\t");
-      ss.at(i) = tolower(ss.at(i));
-      }
-  if (num_split_tags > 0) {std::sort(ss.begin(), ss.end());}
+    bool state = (bool)lbtn->value();
+    if (state) {
+        tags_text+=", " + std::string(sp);
+        }
+    else {
+        std::string tmp = std::string(sp);
+        unsigned int x = tags_text.find(tmp);
+        if (x != std::string::npos) {
+            tags_text.erase(x, tmp.size());
+            }
+        }
 
-  std::vector<std::string> descret_tags;
-  for (unsigned int i = 0; i < num_split_tags; i++) {
-      ss.at(i) = trim(ss.at(i), " ");
-      ss.at(i) = trim(ss.at(i), "\t");
-      if (ss.at(i).size() == 0) {continue;}
-      ss.at(i) = tolower(ss.at(i));
-      descret_tags.push_back(ss.at(i));
-      }
-  tags_text = "";
-  num_split_tags = descret_tags.size();
-  for (unsigned int i = 0; i < num_split_tags; i++) {
-      tags_text += descret_tags.at(i);
-      if (i + 1 < num_split_tags) {
-          tags_text += ", ";
-          }
-      }
-  textbuf->text(tags_text.c_str());
-  edt_sdtags->redraw();
-}
+    std::vector<std::string> ss = split(tags_text, ",");
+    unsigned int num_split_tags = ss.size();
+    for (unsigned int i = 0; i < num_split_tags; i++) {
+        ss.at(i) = trim(ss.at(i), " ");
+        ss.at(i) = trim(ss.at(i), "\t");
+        ss.at(i) = tolower(ss.at(i));
+        }
+    if (num_split_tags > 0) {std::sort(ss.begin(), ss.end());}
 
-static void create_tag_button(std::string &tag_name ) {
-  unsigned int tag_width = 80;
-  unsigned int tag_height = 20;
-  unsigned int tag_padding = 2;
-  unsigned int num_tagbtns = tag_sidebar_pack->children();
+    std::vector<std::string> descret_tags;
+    for (unsigned int i = 0; i < num_split_tags; i++) {
+        ss.at(i) = trim(ss.at(i), " ");
+        ss.at(i) = trim(ss.at(i), "\t");
+        if (ss.at(i).size() == 0) {continue;}
+        ss.at(i) = tolower(ss.at(i));
+        descret_tags.push_back(ss.at(i));
+        }
+    tags_text = "";
+    num_split_tags = descret_tags.size();
+    for (unsigned int i = 0; i < num_split_tags; i++) {
+        tags_text += descret_tags.at(i);
+        if (i + 1 < num_split_tags) {
+            tags_text += ", ";
+            }
+        }
+    textbuf->text(tags_text.c_str());
+    edt_sdtags->redraw();
+    }
 
-  if (tag_name.size() == 0) {
-      tag_name = "Button" + to_string(num_tagbtns + 1);
-      }
+static void create_tag_button(std::string tag_name ) {
+    unsigned int tag_width = 80;
+    unsigned int tag_height = 20;
+    unsigned int tag_padding = 2;
+    unsigned int num_tagbtns = tag_sidebar_pack->children();
 
-  Fl_Light_Button* lbtn = (
-      new Fl_Light_Button(
-          tag_sidebar_pack->x(),
-          tag_sidebar_pack->y() + (num_tagbtns * (tag_height + tag_padding)),
-          tag_width, tag_height,
-          tag_name.c_str()
-          )
-      );
-  lbtn->box(FL_NO_BOX);
-  lbtn->labelfont(5);
-  lbtn->copy_label(tag_name.c_str());
-  lbtn->callback((Fl_Callback*)tags_btn_update, (void*)lbtn->label());
-  tag_sidebar_pack->add(lbtn);
-}
+    if (tag_name.size() == 0) {
+        tag_name = "Button" + to_string(num_tagbtns + 1);
+        }
 
-static void update_tag_buttons(std::vector<std::string> &tags_in_folder) {
-  unsigned int num_tag_btns = tag_sidebar_pack->children();
-  if (num_tag_btns > 0) {
-      Fl_Widget* lbtn;
-      for (unsigned int i = num_tag_btns; i --> 0; ) {
-          lbtn = tag_sidebar_pack->child(i); // Returns Pointer from Object
-          tag_sidebar_pack->remove(i); // Remove Widget
-          //settings->remove(i); // this is for removing a regiun huh
-          delete lbtn; // Delete Widget Object
-          }
-      }
-  num_tag_btns = tags_in_folder.size();
-  if (num_tag_btns > 0) {
-      std::sort(tags_in_folder.begin(), tags_in_folder.end());
-      }
-  for (unsigned int i = 0; i < num_tag_btns; i++) {
-      create_tag_button(tags_in_folder.at(i));
-      }
-}
+    Fl_Light_Button* lbtn = (
+        new Fl_Light_Button(
+            tag_sidebar_pack->x(),
+            tag_sidebar_pack->y() + (num_tagbtns * (tag_height + tag_padding)),
+            tag_width, tag_height,
+            tag_name.c_str()
+            )
+        );
+    lbtn->box(FL_NO_BOX);
+    lbtn->labelfont(5);
+    lbtn->copy_label(tag_name.c_str());
+    lbtn->callback((Fl_Callback*)tags_btn_update, (void*)lbtn->label());
+    tag_sidebar_pack->add(lbtn);
+    }
+
+static void update_tag_buttons() {
+    unsigned int num_tag_btns = tag_sidebar_pack->children();
+    if (num_tag_btns > 0) {
+        Fl_Widget* lbtn;
+        std::string str;
+        for (unsigned int i = num_tag_btns; i --> 0; ) {
+            lbtn = tag_sidebar_pack->child(i); // Returns Pointer from Object
+            if (lbtn->label()) {
+                str = lbtn->label();
+                if (std::find(global_tags.begin(), global_tags.end(), str) == global_tags.end()) {
+                    global_tags.push_back(str);
+                    }
+
+                }
+            tag_sidebar_pack->remove(i); // Remove Widget
+            //settings->remove(i); // this is for removing a regiun huh
+            delete lbtn; // Delete Widget Object
+            }
+        }
+    num_tag_btns = global_tags.size();
+    if (num_tag_btns > 0) {
+        std::sort(global_tags.begin(), global_tags.end());
+        }
+    for (unsigned int i = 0; i < num_tag_btns; i++) {
+        create_tag_button(global_tags.at(i));
+        }
+    }
 
 static void save_txt() {
   // check that image selection from directory is valid
@@ -687,26 +703,26 @@ static void save_txt() {
   		strlen(textbuf->text()),
   		textbuf->text()
   		);
-    s.close();
+  	s.close();
 
   	// append the tags to array
-  	std::vector<std::string> global_tags;
+  	//std::vector<std::string> global_tags;
   	unsigned int num_tags = tag_sidebar_pack->children();
   	//Fl_Light_Button* lbtn = nullptr;
   	if (num_tags > 0) {
-//  		global_tags = std::vector<std::string>(num_tags);
-//  		for (unsigned int i = 0; i < num_tags; i++) {
-//  			lbtn = (Fl_Light_Button*)tag_sidebar_pack->child(i);
-//  			global_tags.at(i) = std::string(lbtn->label());
-//  			}
-  		}
+  	//  		global_tags = std::vector<std::string>(num_tags);
+  	//  		for (unsigned int i = 0; i < num_tags; i++) {
+  	//  			lbtn = (Fl_Light_Button*)tag_sidebar_pack->child(i);
+  	//  			global_tags.at(i) = std::string(lbtn->label());
+  	//  			}
+  	}
 
   	// split the tags in the text
-    std::vector<std::string> tmp = getDelimitedTags(std::string(textbuf->text()), true, false);
-    num_tags = tmp.size();
-    for (unsigned int i = 0; i < num_tags; i++) {
-        appendIfUnique<std::string>(global_tags, tmp.at(i));
-        }
+  	std::vector<std::string> tmp = getDelimitedTags(std::string(textbuf->text()), true, false);
+  	num_tags = tmp.size();
+  	for (unsigned int i = 0; i < num_tags; i++) {
+  		appendIfUnique<std::string>(global_tags, tmp.at(i));
+  		}
   	// add unique tags to array
   	//db.image(sel_file).tags = tmp;
 
@@ -714,7 +730,7 @@ static void save_txt() {
   	if (global_tags.size() > 0) {
 
   		//updates tag list
-  		update_tag_buttons(global_tags);
+  		update_tag_buttons();
   		}
   	}
 
@@ -870,25 +886,27 @@ static void readTagsFromFile(std::wstring txt_file, std::vector<std::string> &ta
   if (os::doesFileExistW(txt_file)) {
       bytestream o;
       if (o.openFileW(txt_file)) {
-          std::string str;
-          std::vector<std::string> tmp;
-          unsigned int tmpn;
-          while (!o.eos()) {
-              str = trim(o.readline());
-              if (str.size() == 0) {continue;}
-              tmp = split(str, ",");
-              tmpn = tmp.size();
-              for (unsigned int j = 0; j < tmpn; j++) {
-                  tmp.at(j) = trim(tmp.at(j), " ");
-                  tmp.at(j) = trim(tmp.at(j), "\t");
-                  tmp.at(j) = tolower(tmp.at(j));
-                  if (cullDuplicates) {
-                      if (std::find(tags.begin(), tags.end(), tmp.at(j)) == tags.end()) {
-                          tags.push_back(tmp.at(j));
-                          }
-                      } else {tags.push_back(tmp.at(j));}
-                  }
-              }
+          std::string str = o.readstring(o.size);
+          tags = getDelimitedTags(str, true, true);
+//          std::vector<std::string> tmp;
+//          unsigned int tmpn;
+//
+//          while (!o.eos()) {
+//              str = trim(o.readline());
+//              if (str.size() == 0) {continue;}
+//              tmp = split(str, ",");
+//              tmpn = tmp.size();
+//              for (unsigned int j = 0; j < tmpn; j++) {
+//                  tmp.at(j) = trim(tmp.at(j), " ");
+//                  tmp.at(j) = trim(tmp.at(j), "\t");
+//                  tmp.at(j) = tolower(tmp.at(j));
+//                  if (cullDuplicates) {
+//                      if (std::find(tags.begin(), tags.end(), tmp.at(j)) == tags.end()) {
+//                          tags.push_back(tmp.at(j));
+//                          }
+//                      } else {tags.push_back(tmp.at(j));}
+//                  }
+//              }
           o.close();
           }
       }
@@ -1155,36 +1173,36 @@ static void overwriteTagsInPath(std::wstring fpath, std::string str) {
   bool halt = false;
   bytestream s;
   for (unsigned int i = 0; i < num_files; i++) {
-      fext = toLowerW(getFilename::TypeW(files.at(i)));
-      if (fext.size() < 3) {continue;}
-      halt = true;
-      for (unsigned int j = 0; j < 4; j++) {
-          if (knownTypes[j].find(fext) != std::wstring::npos) {
-              halt = false;
-              break;
-              }
-          }
-      if (halt) {continue;}
-      s.writeFileW(fpath + getFilename::FileW(files.at(i)) + L".txt", 0, str.size(), (char*)str.c_str());
-      s.close();
-      }
+  	fext = toLowerW(getFilename::TypeW(files.at(i)));
+  	if (fext.size() < 3) {continue;}
+  	halt = true;
+  	for (unsigned int j = 0; j < 4; j++) {
+  		if (knownTypes[j].find(fext) != std::wstring::npos) {
+  			halt = false;
+  			break;
+  			}
+  		}
+  	if (halt) {continue;}
+  	s.writeFileW(fpath + getFilename::FileW(files.at(i)) + L".txt", 0, str.size(), (char*)str.c_str());
+  	s.close();
+  	}
 }
 
 static void binMaps(std::wstring fpath) {
   /*
-      reads each image and distributes them into
-      their own folder based on their dimensions
+  	reads each image and distributes them into
+  	their own folder based on their dimensions
 
-      update,
-      replaced openBitMap with readDimFromJPG,
-      openBitMap uses too much memory
+  	update,
+  	replaced openBitMap with readDimFromJPG,
+  	openBitMap uses too much memory
   */
 
   // Copy currently open file
   bool reloadFile = false;
   if (isSelectionValid()) {
-      save_txt();
-      }
+  	save_txt();
+  	}
 
 
 
@@ -1213,118 +1231,118 @@ static void binMaps(std::wstring fpath) {
   std::wstring filesearch;
   for (unsigned int j = 0; j < num_files; j++) {
 
-      if (files.at(j) == L"." || files.at(j) == L"..") {continue;}
+  	if (files.at(j) == L"." || files.at(j) == L"..") {continue;}
 
-      // check that the image is of a supported file type
-      fext = toLowerW(getFilename::TypeW(files.at(j)));
-      halt = true;
-      for (unsigned int i = 0; i < 4; i++) {
-          if (fext == knownTypes[i]) {
-              halt = false;
-              break;
-              }
-          }
+  	// check that the image is of a supported file type
+  	fext = toLowerW(getFilename::TypeW(files.at(j)));
+  	halt = true;
+  	for (unsigned int i = 0; i < 4; i++) {
+  		if (fext == knownTypes[i]) {
+  			halt = false;
+  			break;
+  			}
+  		}
 
-      // skip if file isn't supported
-      if (halt) {
-          //std::wcout << "halted " <<  files.at(j) << std::endl;
-          continue;
-          }
+  	// skip if file isn't supported
+  	if (halt) {
+  		//std::wcout << "halted " <<  files.at(j) << std::endl;
+  		continue;
+  		}
 
-      // skip file if file was already moved
-      if (!os::doesFileExistW(files.at(j))) {
-          //std::wcout << "cant finf ggile " <<  files.at(j) << std::endl;
-          continue;
-          }
-
-
-      // read the iamge's dimensions
-
-      readDimFromImage(files.at(j), width, height); // could replace this with FLTK's native image reader
-
-      if (width <= 0 || height <= 0) {
-          //std::cout << "incorrect dim\n";
-          return;
-          }
-
-      // calculate image's aspect ratio
-      d = 2.0f;
-      twidth = ((unsigned int)(width / 2.0)) * 2;
-      theight = ((unsigned int)(height / 2.0)) * 2;
-      tw = (float)width;
-      th = (float)height;
-      rw = (unsigned int)tw;
-      rh = (unsigned int)th;
-      c = 1;
-      while (tw >= tl && th >= tl) {
-          tw = twidth / (c * d);
-          th = theight / (c * d);
-          if ((tw - ((float)((unsigned int)tw))) <= tol && (th - ((float)((unsigned int)th))) <= tol) {
-              rw = (unsigned int)tw;
-              rh = (unsigned int)th;
-              }
-          c++;
-          }
-
-      // check the image dimensions are valid
-      if (rw > 0 && rh > 0) {
-
-          // check if aspect ratio is new
-          a = (unsigned int)(((float)rw / (float)rh) * 1000);
-          x = findItem(aspects, a);
-
-          // add new entry
-          if (x == -1) {
-
-              // create a new folder if needed
-              n = to_string(rw) + " x " + to_string(rh);
-              if (!os::doesFileExistW(fpath + string_to_wstring(n) + L"\\")) {
-                  os::makeDirW(fpath + string_to_wstring(n) + L"\\");
-                  }
-
-              // append data
-              x = aspects.size();
-              folders.push_back(n);
-              aspects.push_back(a);
-              }
-
-          // create destination path
-          newfile = fpath + string_to_wstring(folders[x]) + L"\\" + getFilename::FileW(files.at(j));
-          filesearch = fpath + getFilename::FileW(files.at(j));
-
-          // search known types and move them
-          for (unsigned int k = 0; k < num_img_types; k++) {
-
-              if (!os::doesFileExistW(filesearch + knownTypes[k])) {
-                  //std::wcout << L"Fail, cant find file: \t" << filesearch << knownTypes[k] << std::endl;
-                  continue;
-                  }
-
-              // move file to the given location
-              os::moveFileW(filesearch + knownTypes[k], newfile + knownTypes[k]);
+  	// skip file if file was already moved
+  	if (!os::doesFileExistW(files.at(j))) {
+  		//std::wcout << "cant finf ggile " <<  files.at(j) << std::endl;
+  		continue;
+  		}
 
 
-              // check if the file is one of the currently opened files
-              x = findItem<std::wstring>(filesW, filesearch + knownTypes[k]);
+  	// read the iamge's dimensions
 
-              // update file names
-              if (x > -1) {
-                  filesW.at(x) = newfile + knownTypes[k];
-                  if (x == sel_file) {reloadFile = true;}
-                  // set flag to reload later
-                  //if (!reloadFiles) {reloadFiles = true;}
-                  }
-              }
-          }
-      //else {std::cout << "invalid img dim\n";}
-      }
+  	readDimFromImage(files.at(j), width, height); // could replace this with FLTK's native image reader
+
+  	if (width <= 0 || height <= 0) {
+  		//std::cout << "incorrect dim\n";
+  		return;
+  		}
+
+  	// calculate image's aspect ratio
+  	d = 2.0f;
+  	twidth = ((unsigned int)(width / 2.0)) * 2;
+  	theight = ((unsigned int)(height / 2.0)) * 2;
+  	tw = (float)width;
+  	th = (float)height;
+  	rw = (unsigned int)tw;
+  	rh = (unsigned int)th;
+  	c = 1;
+  	while (tw >= tl && th >= tl) {
+  		tw = twidth / (c * d);
+  		th = theight / (c * d);
+  		if ((tw - ((float)((unsigned int)tw))) <= tol && (th - ((float)((unsigned int)th))) <= tol) {
+  			rw = (unsigned int)tw;
+  			rh = (unsigned int)th;
+  			}
+  		c++;
+  		}
+
+  	// check the image dimensions are valid
+  	if (rw > 0 && rh > 0) {
+
+  		// check if aspect ratio is new
+  		a = (unsigned int)(((float)rw / (float)rh) * 1000);
+  		x = findItem(aspects, a);
+
+  		// add new entry
+  		if (x == -1) {
+
+  			// create a new folder if needed
+  			n = to_string(rw) + " x " + to_string(rh);
+  			if (!os::doesFileExistW(fpath + string_to_wstring(n) + L"\\")) {
+  				os::makeDirW(fpath + string_to_wstring(n) + L"\\");
+  				}
+
+  			// append data
+  			x = aspects.size();
+  			folders.push_back(n);
+  			aspects.push_back(a);
+  			}
+
+  		// create destination path
+  		newfile = fpath + string_to_wstring(folders[x]) + L"\\" + getFilename::FileW(files.at(j));
+  		filesearch = fpath + getFilename::FileW(files.at(j));
+
+  		// search known types and move them
+  		for (unsigned int k = 0; k < num_img_types; k++) {
+
+  			if (!os::doesFileExistW(filesearch + knownTypes[k])) {
+  				//std::wcout << L"Fail, cant find file: \t" << filesearch << knownTypes[k] << std::endl;
+  				continue;
+  				}
+
+  			// move file to the given location
+  			os::moveFileW(filesearch + knownTypes[k], newfile + knownTypes[k]);
+
+
+  			// check if the file is one of the currently opened files
+  			x = findItem<std::wstring>(filesW, filesearch + knownTypes[k]);
+
+  			// update file names
+  			if (x > -1) {
+  				filesW.at(x) = newfile + knownTypes[k];
+  				if (x == sel_file) {reloadFile = true;}
+  				// set flag to reload later
+  				//if (!reloadFiles) {reloadFiles = true;}
+  				}
+  			}
+  		}
+  	//else {std::cout << "invalid img dim\n";}
+  	}
 
   // check the files should be reloaded
   if (reloadFile && num_files > 0) {
 
-      // restart by re-opening file
-      read_image(unicode_to_utf8(files.at(sel_file)));
-      }
+  	// restart by re-opening file
+  	read_image(unicode_to_utf8(files.at(sel_file)));
+  	}
 }
 
 static void renameDataset(std::wstring fpath, std::string prefix ) {
@@ -1430,18 +1448,18 @@ static void renameDataset(std::wstring fpath, std::string prefix ) {
 static void getTagsFromPathOfTxt(std::wstring fpath) {
   // check there is a default path
   if (!os::doesFileExistW(fpath)) {
-      fl_choice("Path Not Set", "OK", 0, 0);
-      std::vector<std::string> tmp;
-      return;
-      }
+  	fl_choice("Path Not Set", "OK", 0, 0);
+  	std::vector<std::string> tmp;
+  	return;
+  	}
 
   // Grab the files from the path
   std::vector<std::wstring> files = os::getFilesW(fpath + L"*.txt");
   unsigned int num_files = files.size();
   if (num_files == 0) {
-      std::cout << "no text files in path\n";
-      return;
-      }
+  	std::cout << "no text files in path\n";
+  	return;
+  	}
 
 
   // read in tags from each text
@@ -1449,29 +1467,29 @@ static void getTagsFromPathOfTxt(std::wstring fpath) {
   std::vector<std::string> ss;
   unsigned int sc;
   for (unsigned int j = 0; j < num_files; j++) {
-      ss.clear();
-      readTagsFromFile(files.at(j), ss, false);
+  	ss.clear();
+  	readTagsFromFile(files.at(j), ss, false);
 
-      // add unique tags to collection of tags
-      sc = ss.size();
-      for (unsigned int i = 0; i < sc; i++) {
+  	// add unique tags to collection of tags
+  	sc = ss.size();
+  	for (unsigned int i = 0; i < sc; i++) {
 
-          ss.at(i) = trim(ss.at(i), " ");
-          ss.at(i) = trim(ss.at(i), "\t");
-          if (ss.at(i).size() == 0) {continue;}
-          ss.at(i) = tolower(ss.at(i));
+  		ss.at(i) = trim(ss.at(i), " ");
+  		ss.at(i) = trim(ss.at(i), "\t");
+  		if (ss.at(i).size() == 0) {continue;}
+  		ss.at(i) = tolower(ss.at(i));
 
-          if (std::find(tags.begin(), tags.end(), ss.at(i)) == tags.end()) {
-              tags.push_back(ss.at(i));
-              }
-          }
-      }
+  		if (std::find(tags.begin(), tags.end(), ss.at(i)) == tags.end()) {
+  			tags.push_back(ss.at(i));
+  			}
+  		}
+  	}
 
   unsigned int num_tags = tags.size();
   if (num_tags == 0) {
-      std::cout << "no tags from text parse\n";
-      return;
-      }
+  	std::cout << "no tags from text parse\n";
+  	return;
+  	}
 
   // sort tags
   std::sort(tags.begin(), tags.end());
@@ -1480,20 +1498,20 @@ static void getTagsFromPathOfTxt(std::wstring fpath) {
   std::string text_data = "";
   for (unsigned int i = 0; i < num_tags; i++) {
 
-      text_data += tags.at(i);
-      if (i + 1 < num_tags) {
-          text_data += ", ";
-          }
-      }
+  	text_data += tags.at(i);
+  	if (i + 1 < num_tags) {
+  		text_data += ", ";
+  		}
+  	}
   if (text_data.size() > 0) {
 
-      bytestream s;
-      std::wstring text_file = fpath + L"gathered tags.txt";
-      s.writeFileW(text_file, 0, text_data.size(), (char*)text_data.c_str());
-      os::start(text_file);
-      //os::deleteFileW(text_file, true);
-      s.close();
-      }
+  	bytestream s;
+  	std::wstring text_file = fpath + L"gathered tags.txt";
+  	s.writeFileW(text_file, 0, text_data.size(), (char*)text_data.c_str());
+  	os::start(text_file);
+  	//os::deleteFileW(text_file, true);
+  	s.close();
+  	}
 }
 
 static void batch_rename() {
@@ -1511,375 +1529,359 @@ static void batch_rename() {
 }
 
 int load_tagfile(std::wstring file) {
-  // use FLTK's native loadfile function to read the txt into the widget
-  int result = 0;
-  bytestream f;
-  if ((result = f.openFileW(file))) {
+    int result = 0;
+    bytestream f;
+    if ((result = f.openFileW(file))) {
 
-      //int result = textbuf->loadfile((unicode_to_utf8(file)).c_str());
-      //if (result == 0) {}
-
-      // Parse what was read from the file
-      std::string tmpstr = "";
-      //tmpstr = textbuf->text();
-      while (!f.eos()) {tmpstr += f.readline();}
+        // Parse what was read from the file
+        std::vector<std::string> tags = getDelimitedTags(f.readstring(f.size), true, true);
+        //for (unsigned int i = 0; i < tags.size(); i++) {std::cout << "tag" << i << ": \t" << tags.at(i) << std::endl;}
+        // check the file isn't empty
+        if (tags.size() > 0) {
 
 
-      // trim white space
-      tmpstr = trim(tmpstr, " ");
+            // sort and write back to the widget
+            unsigned int num_tags = tags.size();
+            std::string tmpstr = "";
+            if (num_tags > 0) {
+                //std::sort(tags.begin(), tags.end());
+                //signed int x;
+                std::string tag_name;
+                Fl_Light_Button* lbtn;
+                unsigned int num_tag_btns = tag_sidebar_pack->children();
+                for (unsigned int i = 0; i < num_tags; i++) {
 
-      // check the file isn't empty
-      if (tmpstr.size() > 0) {
+                    for (unsigned int j = 0; j < num_tag_btns; j++) {
 
-          // split the string by any comma's
-          std::vector<std::string> tmptags = split(tmpstr, ",");
-          unsigned int num_tags = tmptags.size();
+                        lbtn = (Fl_Light_Button*)tag_sidebar_pack->child(j);
+                        tag_name = lbtn->label();
+                        if (tag_name == tags.at(i)) {
+                            lbtn->set();
+                            lbtn->redraw();
+                            break;
+                            }
+                        }
+                    //std::cout << "tag" << i << ":\t " << tags.at(i) << std::endl;
 
-          //std::cout << "num_tags: \t" << num_tags << std::endl;
-          std::vector<std::string> tags;
-          for (unsigned int i = 0; i < num_tags; i++) {
+                    if (tmpstr.size() == 0) {
+                        tmpstr+= tags.at(i);
+                        }
+                    else {
+                        tmpstr+= ", " + tags.at(i);
+                        }
 
-              // clean up tag
-              tmptags.at(i) = trim(tmptags.at(i), " ");
-              tmptags.at(i) = trim(tmptags.at(i), "\t");
-              tmptags.at(i) = tolower(tmptags.at(i));
+                    }
 
-              if (tmptags.at(i).size() == 0) {continue;}
-
-              //std::cout << "typin" << i << ":\t " << tmptags.at(i) << std::endl;
-              appendIfUnique<std::string>(tags, tmptags.at(i));
-              }
-
-          Fl_Light_Button* lbtn;
-
-
-          unsigned int num_tag_btns = tag_sidebar_pack->children();
-          for (unsigned int i = 0; i < num_tag_btns; i++) {
-              lbtn = (Fl_Light_Button*)tag_sidebar_pack->child(i);
-              lbtn->clear();
-              lbtn->redraw();
-              }
-
-          // sort and write back to the widget
-          num_tags = tags.size();
-          if (num_tags > 0) {
-              std::sort(tags.begin(), tags.end());
-              tmpstr = "";
-              //signed int x;
-              std::string tag_name;
-              for (unsigned int i = 0; i < num_tags; i++) {
-
-                  for (unsigned int j = 0; j < num_tag_btns; j++) {
-
-                      lbtn = (Fl_Light_Button*)tag_sidebar_pack->child(j);
-                      tag_name = lbtn->label();
-                      if (tag_name == tags.at(i)) {
-                          lbtn->set();
-                          lbtn->redraw();
-                          break;
-                          }
-                      }
-                  //std::cout << "tag" << i << ":\t " << tags.at(i) << std::endl;
-                  tmpstr+= tags.at(i) + ", ";
-                  }
-              tmpstr+= tags.at(num_tags - 1) + "\n";
-              }
-          textbuf->text(tmpstr.c_str());
-          }
-      f.close();
-      }
-  return result;
-}
+                }
+            textbuf->text(tmpstr.c_str());
+            }
+        f.close();
+        }
+    return result;
+    }
 
 bool load_image() {
-  clear_image();
+    clear_image();
 
-  // update image selection index in database
-  settings->selected = sel_file;
-
-
-  // Check that the index for the files array is in bounds
-  if (!isSelectionValid()) {
-      std::cout << "index for image array is out of bounds [" << sel_file << ":" << filesW.size() << "]" << std::endl;
-      std::cout << "Size: " << filesW.size() << std::endl;
-      std::cout << "sel_file: " << sel_file << std::endl;
-      std::cout << "sel_file2: " << (unsigned int)(sel_file + 1) << std::endl;
-      return false;
-      }
-
-  // since windows uses wide characters, and FTLK uses UTF8 convert file to wide (for windows)
-  std::string file = unicode_to_utf8(filesW.at(sel_file));
-
-  // Determine file type from naming extension
-  std::string fext = tolower(getFilename::Type(file));
-
-  // check if input is a text file
-  if (fext == ".txt" || fext == ".csv") {
-      std::cout << "warning a none image type was provided, trying to search for nearest image\n";
-      // check for iamge file
-      std::wstring wstr = filesW.at(sel_file).substr(0, filesW.at(sel_file).find_last_of(L"."));
-      if (os::doesFileExistW(wstr + L".jpg")) {
-          filesW.at(sel_file) = wstr + L".jpg";
-          fext = ".jpg";
-          }
-      else if (os::doesFileExistW(wstr + L".jpeg")) {
-          filesW.at(sel_file) = wstr + L".jpeg";
-          fext = ".jpeg";
-          }
-      else if (os::doesFileExistW(wstr + L".bmp")) {
-          filesW.at(sel_file) = wstr + L".bmp";
-          fext = ".bmp";
-          }
-      else if (os::doesFileExistW(wstr + L".png")) {
-          filesW.at(sel_file) = wstr + L".png";
-          fext = ".png";
-          }
-      else {
-          std::cout << "failed to locate image type\n" << std::endl;
-          return false;
-          }
-
-      file = unicode_to_utf8(filesW.at(sel_file));
-      }
-
-  // Bail if type not supported
-  int type = 0;
-  if      (fext == ".jpg" || fext == ".jepg") {type=1;}
-  else if (fext == ".png")                    {type=2;}
-  else if (fext == ".bmp")                    {type=3;}
-  else {
-      std::cout << "Image Type Not Supported By App [" << fext << "]" << std::endl;
-      return false;
-      }
+    // update image selection index in database
+    settings->selected = sel_file;
 
 
-  // Load data / render to screen
-  switch (type) {
-      case 1: {
-          Fl_JPEG_Image* jpg = new Fl_JPEG_Image(file.c_str());
-          char* errMsg = nullptr;
-          size_t errMsgLen = 0;
-          switch ( jpg->fail() ) { // Check for Errors
-              case Fl_Image::ERR_NO_IMAGE:
-              case Fl_Image::ERR_FILE_ACCESS: {
-                  strerror_s(errMsg, errMsgLen, errno);
-                  fl_alert("%s: %s", file.c_str(), errMsg);
-                  if (errMsg != nullptr) {delete errMsg;}
-                  return false;
-              }
-              case Fl_Image::ERR_FORMAT: {fl_alert("%s: couldn't decode image", file.c_str()); return false;}
-              }
-          imgbuf = jpg->copy(); delete jpg; shp_image->image( imgbuf );
-          break;
-          }
-      case 2: {
-          Fl_PNG_Image* png = new Fl_PNG_Image(file.c_str());
-          char* errMsg = nullptr;
-          size_t errMsgLen = 0;
-          switch ( png->fail() ) { // Check for Errors
-              case Fl_Image::ERR_NO_IMAGE:
-              case Fl_Image::ERR_FILE_ACCESS: {
+    // Check that the index for the files array is in bounds
+    if (!isSelectionValid()) {
+        std::cout << "index for image array is out of bounds [" << sel_file << ":" << filesW.size() << "]" << std::endl;
+        std::cout << "Size: " << filesW.size() << std::endl;
+        std::cout << "sel_file: " << sel_file << std::endl;
+        std::cout << "sel_file2: " << (unsigned int)(sel_file + 1) << std::endl;
+        return false;
+        }
 
-                  strerror_s(errMsg, errMsgLen, errno);
-                  fl_alert("%s: %s", file.c_str(), errMsg); break;
-                  if (errMsg != nullptr) { delete errMsg; }
-                  return false;
-              }
-              case Fl_Image::ERR_FORMAT: {fl_alert("%s: couldn't decode image", file.c_str()); return false;}
-              }
-          imgbuf = png->copy(); delete png; shp_image->image( imgbuf );
-          break;
-          }
-      case 3: {
-          Fl_BMP_Image* bmp = new Fl_BMP_Image(file.c_str());
-          char* errMsg = nullptr;
-          size_t errMsgLen = 0;
-          switch ( bmp->fail() ) { // Check for Errors
-              case Fl_Image::ERR_NO_IMAGE:
-              case Fl_Image::ERR_FILE_ACCESS: {
-                  strerror_s(errMsg, errMsgLen, errno);
-                  fl_alert("%s: %s", file.c_str(), errMsg); break;
-                  if (errMsg != nullptr) { delete errMsg; }
-                  return false;
-                  }
-              case Fl_Image::ERR_FORMAT: {
-                  fl_alert("%s: couldn't decode image", file.c_str());
-                  return false;
-                  }
-              }
-          imgbuf = bmp->copy(); delete bmp; shp_image->image( imgbuf );
-          break;
-          }
-      default: {
-          std::cout << "unsupported type\n";
-          return false;
-          }
-      }
+    // since windows uses wide characters, and FTLK uses UTF8 convert file to wide (for windows)
+    std::string file = unicode_to_utf8(filesW.at(sel_file));
+
+    // Determine file type from naming extension
+    std::string fext = tolower(getFilename::Type(file));
+
+    // check if input is a text file
+    if (fext == ".txt" || fext == ".csv") {
+        std::cout << "warning a none image type was provided, trying to search for nearest image\n";
+        // check for iamge file
+        std::wstring wstr = filesW.at(sel_file).substr(0, filesW.at(sel_file).find_last_of(L"."));
+        if (os::doesFileExistW(wstr + L".jpg")) {
+            filesW.at(sel_file) = wstr + L".jpg";
+            fext = ".jpg";
+            }
+        else if (os::doesFileExistW(wstr + L".jpeg")) {
+            filesW.at(sel_file) = wstr + L".jpeg";
+            fext = ".jpeg";
+            }
+        else if (os::doesFileExistW(wstr + L".bmp")) {
+            filesW.at(sel_file) = wstr + L".bmp";
+            fext = ".bmp";
+            }
+        else if (os::doesFileExistW(wstr + L".png")) {
+            filesW.at(sel_file) = wstr + L".png";
+            fext = ".png";
+            }
+        else {
+            std::cout << "failed to locate image type\n" << std::endl;
+            return false;
+            }
+
+        file = unicode_to_utf8(filesW.at(sel_file));
+        }
+
+    // Bail if type not supported
+    int type = 0;
+    if      (fext == ".jpg" || fext == ".jepg") {type=1;}
+    else if (fext == ".png")                    {type=2;}
+    else if (fext == ".bmp")                    {type=3;}
+    else {
+        std::cout << "Image Type Not Supported By App [" << fext << "]" << std::endl;
+        return false;
+        }
 
 
+    // Load data / render to screen
+    switch (type) {
+        case 1: {
+            Fl_JPEG_Image* jpg = new Fl_JPEG_Image(file.c_str());
+            char* errMsg = nullptr;
+            size_t errMsgLen = 0;
+            switch ( jpg->fail() ) { // Check for Errors
+                case Fl_Image::ERR_NO_IMAGE:
+                case Fl_Image::ERR_FILE_ACCESS: {
+                    strerror_s(errMsg, errMsgLen, errno);
+                    fl_alert("%s: %s", file.c_str(), std::string(errMsg).c_str());
+                    if (errMsg != nullptr) {delete errMsg;}
+                    return false;
+                    }
+                case Fl_Image::ERR_FORMAT: {fl_alert("%s: couldn't decode image", file.c_str()); return false;}
+                }
+            imgbuf = jpg->copy(); delete jpg; shp_image->image( imgbuf );
+            break;
+            }
+        case 2: {
+            Fl_PNG_Image* png = new Fl_PNG_Image(file.c_str());
+            char* errMsg = nullptr;
+            size_t errMsgLen = 0;
+            switch ( png->fail() ) { // Check for Errors
+                case Fl_Image::ERR_NO_IMAGE:
+                case Fl_Image::ERR_FILE_ACCESS: {
 
-  //    settings->regions.clear();
-
-  //std::cout << "Regions Left: \t" << shp_image->children() << std::endl;
+                    strerror_s(errMsg, errMsgLen, errno);
+                    fl_alert("%s: %s", file.c_str(), std::string(errMsg).c_str()); break;
+                    if (errMsg != nullptr) { delete errMsg; }
+                    return false;
+                    }
+                case Fl_Image::ERR_FORMAT: {fl_alert("%s: couldn't decode image", file.c_str()); return false;}
+                }
+            imgbuf = png->copy(); delete png; shp_image->image( imgbuf );
+            break;
+            }
+        case 3: {
+            Fl_BMP_Image* bmp = new Fl_BMP_Image(file.c_str());
+            char* errMsg = nullptr;
+            size_t errMsgLen = 0;
+            switch ( bmp->fail() ) { // Check for Errors
+                case Fl_Image::ERR_NO_IMAGE:
+                case Fl_Image::ERR_FILE_ACCESS: {
+                    strerror_s(errMsg, errMsgLen, errno);
+                    fl_alert("%s: %s", file.c_str(), std::string(errMsg).c_str()); break;
+                    if (errMsg != nullptr) { delete errMsg; }
+                    return false;
+                    }
+                case Fl_Image::ERR_FORMAT: {
+                    fl_alert("%s: couldn't decode image", file.c_str());
+                    return false;
+                    }
+                }
+            imgbuf = bmp->copy(); delete bmp; shp_image->image( imgbuf );
+            break;
+            }
+        default: {
+            std::cout << "unsupported type\n";
+            return false;
+            }
+        }
 
 
 
+    //    settings->regions.clear();
 
-
-  // check that the number of arrays is larger then 0
-  /*
-  imgm5d = "3B5D3C7D207E37DCEEEDD301E35E2E58";
-
-  if (imgbuf->count() > 0) { // there can be more then one pixel array for a given image
-
-      // Calculate the theortical size, I didn't understand what the doc said able ld() tho so might not work
-      unsigned int buf_size = imgbuf->w() * imgbuf->h() * imgbuf->d();
-
-      if (buf_size > 0) {
-          // read the first buffer pointer to the RGB data, I didnt understand what the doc said about multiple image arrays, sooo
-          const char* buf = static_cast<const char*>( *imgbuf->data() );
-
-          // Should be able to read the pixels, check with d() to get how many channels RGB(3) or RGBA(4)
-          //for (unsigned int i = 0; i < 12; i++) {std::cout << i << ": \t" << (int)(unsigned char)buf[i] << std::endl;}
-
-          // Create a MD5 checksum from the pixel array
-          imgm5d = md5(buf, buf_size);
-          //std::cout << "GENERATED MD5: \t" << imgm5d << std::endl;
-          // add image to database
-          //settings->addImage(file, imgm5d, imgbuf->w(), imgbuf->h(), "");
-          }
-      }
-  */
+    //std::cout << "Regions Left: \t" << shp_image->children() << std::endl;
 
 
 
-  // Set Zoom out Limit
-  imgmin_limit = imgmin_limit_default;
-  if (imgbuf->w() < imgmin_limit && imgbuf->w() > 0) {imgmin_limit = imgbuf->w();}
-  if (imgbuf->h() < imgmin_limit && imgbuf->h() > 0) {imgmin_limit = imgbuf->h();}
-
-  // calculate zoom ratio
-  img_resize();
-
-  // resize mage
-  img_rescale();
-
-  // Set Image Start Position
-  imgpos[0] = tile_view->x() + (tile_view->w() / 2) - (shp_image->w() / 2);
-  imgpos[1] = tile_view->y() + (tile_view->h() / 2) - (shp_image->h() / 2);
-
-  // Update Image Position
-  shp_image->position(imgpos[0], imgpos[1] );
 
 
-  // Load any regions from previous
-  //settings->set(image_data(imgm5d, file, "", imgbuf->w(), imgbuf->h()));
+    // check that the number of arrays is larger then 0
+    /*
+        imgm5d = "3B5D3C7D207E37DCEEEDD301E35E2E58";
 
-  settings->loadCSV(getFilename::Path(file) + getFilename::File(file) + ".csv", sel_file);
+        if (imgbuf->count() > 0) { // there can be more then one pixel array for a given image
 
-  unsigned int reg_count = settings->count();
-  if (reg_count > 0) {
+        // Calculate the theortical size, I didn't understand what the doc said able ld() tho so might not work
+        unsigned int buf_size = imgbuf->w() * imgbuf->h() * imgbuf->d();
 
-      signed int img_center_x = shp_image->x() + (shp_image->w() / 2);
-      signed int img_center_y = shp_image->y() + (shp_image->h() / 2);
+        if (buf_size > 0) {
+        // read the first buffer pointer to the RGB data, I didnt understand what the doc said about multiple image arrays, sooo
+        const char* buf = static_cast<const char*>( *imgbuf->data() );
 
-      for (unsigned int  i = 0; i < reg_count; i++) {
+        // Should be able to read the pixels, check with d() to get how many channels RGB(3) or RGBA(4)
+        //for (unsigned int i = 0; i < 12; i++) {std::cout << i << ": \t" << (int)(unsigned char)buf[i] << std::endl;}
 
-          //std::cout << "CSV Region: (" << settings->image.at(sel_file).region.at(i).x << ", ";
-          //std::cout << settings->image.at(sel_file).region.at(i).y << ", ";
-          //std::cout << settings->image.at(sel_file).region.at(i).w << ", ";
-          //std::cout << settings->image.at(sel_file).region.at(i).h << ")" << std::endl;
-
-          Resizeable* boxregion = (
-              new Resizeable(
-                  (signed int)((float)((settings->image.at(sel_file).region.at(i).x - (settings->image.at(sel_file).region.at(i).w * 0.5f)) * imgzoom) + img_center_x),
-                  (signed int)((float)((settings->image.at(sel_file).region.at(i).y - (settings->image.at(sel_file).region.at(i).h * 0.5f)) * imgzoom) + img_center_y),
-                  (signed int)((float)settings->image.at(sel_file).region.at(i).w * imgzoom),
-                  (signed int)((float)settings->image.at(sel_file).region.at(i).h * imgzoom),
-                  settings->image.at(sel_file).region.at(i).tag.c_str()
-                  )
-              );
-          //                    boxregion->box(FL_NO_BOX);
-          boxregion->labelfont(5);
-         if (bit::get(visiblity, 1)) {boxregion->show();} else {boxregion->hide();}
-
-          //                        boxregion->selection_color((Fl_Color)14);
-          //boxregion->image(G_cat);
-          boxregion->box(FL_NO_BOX);
-          //                        boxregion->color(Fl_Color(46));
-
-
-          boxregion->labelfont(5);
-          //boxregion->copy_label(tag_name.c_str());
-          //boxregion->callback((Fl_Callback*)tags_btn_update, (void*)boxregion->label());
-          shp_image->add(boxregion);
-          boxregion->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-          boxregion->when(FL_WHEN_RELEASE);
-          //        boxregion->resizable(shp_image);
-
-          //boxregion->copy_label(tag_name.c_str());
-          //boxregion->callback((Fl_Callback*)tags_btn_update, (void*)boxregion->label());
-          shp_image->add(boxregion);
+        // Create a MD5 checksum from the pixel array
+        imgm5d = md5(buf, buf_size);
+        //std::cout << "GENERATED MD5: \t" << imgm5d << std::endl;
+        // add image to database
+        //settings->addImage(file, imgm5d, imgbuf->w(), imgbuf->h(), "");
+        }
+        }
+    */
 
 
 
-          shp_image->redraw();
-          boxregion->redraw();
+    // Set Zoom out Limit
+    imgmin_limit = imgmin_limit_default;
+    if (imgbuf->w() < imgmin_limit && imgbuf->w() > 0) {imgmin_limit = imgbuf->w();}
+    if (imgbuf->h() < imgmin_limit && imgbuf->h() > 0) {imgmin_limit = imgbuf->h();}
 
-          // Create a new region, not sure I even have to given it a position??
-          //float invzoom = 1.0f / imgzoom;
+    // calculate zoom ratio
+    img_resize();
 
-          //settings->add(
-          //    region_data(
-          //        settings->width(i) * invzoom,
-           //       settings->height(i) * invzoom,
-           //       settings->posx(i) * invzoom,
-           //       settings->posy(i) * invzoom,
-           //       settings->name(i)
-           ////       )
-           //   );
+    // resize mage
+    img_rescale();
 
-          }
+    // Set Image Start Position
+    imgpos[0] = tile_view->x() + (tile_view->w() / 2) - (shp_image->w() / 2);
+    imgpos[1] = tile_view->y() + (tile_view->h() / 2) - (shp_image->h() / 2);
 
-
-      }
+    // Update Image Position
+    shp_image->position(imgpos[0], imgpos[1] );
 
 
+    // Load any regions from previous
+    //settings->set(image_data(imgm5d, file, "", imgbuf->w(), imgbuf->h()));
 
-  // Add info to the Title bar and Status Bar
-  lb_file->value((getFilename::FromPath(file)).c_str());
-  SetWindowTextA(xid, lb_file->value());
+    settings->loadCSV(getFilename::Path(file) + getFilename::File(file) + ".csv", sel_file);
 
-  std::string info = to_string(imgbuf->w());
-  info += " x ";
-  info += to_string(imgbuf->h());
-  if (fext.size() > 0) {info += " " + fext.substr(1);}
-  lb_info->value(info.c_str());
+    unsigned int reg_count = settings->count();
+    if (reg_count > 0) {
 
-  info = to_string((int)(imgzoom * 100)) + "%";
-  lb_zoom->value(info.c_str());
+        signed int img_center_x = shp_image->x() + (shp_image->w() / 2);
+        signed int img_center_y = shp_image->y() + (shp_image->h() / 2);
 
-  info = to_string(sel_file + 1) + "/" + to_string(num_files);
-  lb_page->value(info.c_str());
+        for (unsigned int  i = 0; i < reg_count; i++) {
 
-  info = "";
-  size_t imgsize = os::getFileSizeW(filesW.at(sel_file));
-  if (imgsize > 999999) {info += floatToString((float)imgsize / 1000000.0f) + " mb";}
-  else if (imgsize > 999) {info += floatToString((float)imgsize / 1000.0f) + " kb";}
-  else {info += to_string(imgsize) + " bytes";}
-  lb_fsize->value(info.c_str());
+            //std::cout << "CSV Region: (" << settings->image.at(sel_file).region.at(i).x << ", ";
+            //std::cout << settings->image.at(sel_file).region.at(i).y << ", ";
+            //std::cout << settings->image.at(sel_file).region.at(i).w << ", ";
+            //std::cout << settings->image.at(sel_file).region.at(i).h << ")" << std::endl;
+
+            Resizeable* boxregion = (
+                new Resizeable(
+                    (signed int)((float)((settings->image.at(sel_file).region.at(i).x - (settings->image.at(sel_file).region.at(i).w * 0.5f)) * imgzoom) + img_center_x),
+                    (signed int)((float)((settings->image.at(sel_file).region.at(i).y - (settings->image.at(sel_file).region.at(i).h * 0.5f)) * imgzoom) + img_center_y),
+                    (signed int)((float)settings->image.at(sel_file).region.at(i).w * imgzoom),
+                    (signed int)((float)settings->image.at(sel_file).region.at(i).h * imgzoom),
+                    settings->image.at(sel_file).region.at(i).tag.c_str()
+                    )
+                );
+            //                    boxregion->box(FL_NO_BOX);
+            //boxregion->labelfont(5);
+            if (bit::get(visiblity, 1)) {boxregion->show();} else {boxregion->hide();}
+
+            //                        boxregion->selection_color((Fl_Color)14);
+            //boxregion->image(G_cat);
+            boxregion->box(FL_NO_BOX);
+            //                        boxregion->color(Fl_Color(46));
+
+            boxregion->labelcolor(fl_rgb_color(255, 255, 0));
+            boxregion->labelfont(FL_HELVETICA_BOLD);
+            boxregion->labeltype(FL_ENGRAVED_LABEL);
+            boxregion->labelsize(14);
+            //boxregion->copy_label(tag_name.c_str());
+            //boxregion->callback((Fl_Callback*)tags_btn_update, (void*)boxregion->label());
+            shp_image->add(boxregion);
+            boxregion->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+            boxregion->when(FL_WHEN_RELEASE);
+            //        boxregion->resizable(shp_image);
+
+            //boxregion->copy_label(tag_name.c_str());
+            //boxregion->callback((Fl_Callback*)tags_btn_update, (void*)boxregion->label());
+            shp_image->add(boxregion);
 
 
-  // Check for Text file
-  std::wstring txtfile = getFilename::PathW(filesW.at(sel_file)) + getFilename::FileW(filesW.at(sel_file)) + L".txt";
-  if (os::doesFileExistW(txtfile)) {load_tagfile(txtfile);}
 
-  // Redraw all widgets
-  redraw_ui();
-  return true;
-}
+            shp_image->redraw();
+            boxregion->redraw();
+
+            // Create a new region, not sure I even have to given it a position??
+            //float invzoom = 1.0f / imgzoom;
+
+            //settings->add(
+            //    region_data(
+            //        settings->width(i) * invzoom,
+            //       settings->height(i) * invzoom,
+            //       settings->posx(i) * invzoom,
+            //       settings->posy(i) * invzoom,
+            //       settings->name(i)
+            ////       )
+            //   );
+
+            }
+
+
+        }
+
+
+
+    // Add info to the Title bar and Status Bar
+    lb_file->value((getFilename::FromPath(file)).c_str());
+    SetWindowTextA(xid, lb_file->value());
+
+    std::string info = to_string(imgbuf->w());
+    info += " x ";
+    info += to_string(imgbuf->h());
+    if (fext.size() > 0) {info += " " + fext.substr(1);}
+    lb_info->value(info.c_str());
+
+    info = to_string((int)(imgzoom * 100)) + "%";
+    lb_zoom->value(info.c_str());
+
+    info = to_string(sel_file + 1) + "/" + to_string(num_files);
+    lb_page->value(info.c_str());
+
+    info = "";
+    size_t imgsize = os::getFileSizeW(filesW.at(sel_file));
+    if (imgsize > 999999) {info += floatToString((float)imgsize / 1000000.0f) + " mb";}
+    else if (imgsize > 999) {info += floatToString((float)imgsize / 1000.0f) + " kb";}
+    else {info += to_string(imgsize) + " bytes";}
+    lb_fsize->value(info.c_str());
+
+    // toggle off all buttons
+    Fl_Light_Button* lbtn;
+    unsigned int num_tag_btns = tag_sidebar_pack->children();
+    for (unsigned int i = 0; i < num_tag_btns; i++) {
+        lbtn = (Fl_Light_Button*)tag_sidebar_pack->child(i);
+        lbtn->clear();
+        lbtn->redraw();
+        }
+
+    // Check for Text file
+    std::wstring txtfile = getFilename::PathW(filesW.at(sel_file)) + getFilename::FileW(filesW.at(sel_file)) + L".txt";
+    if (os::doesFileExistW(txtfile)) {load_tagfile(txtfile);}
+
+    // Redraw all widgets
+    redraw_ui();
+    return true;
+    }
 
 bool read_image(std::string file) {
+
+
+
   // fetch files from directory
   std::wstring fileW = utf8_2_unicode(file);
   std::wstring fpathW = getFilename::PathW(fileW);
@@ -1969,13 +1971,13 @@ bool read_image(std::string file) {
   // Get the current folder, path used later to file management
   root_path = fpathW;
   work_path = fpathW;
-
+    global_tags.clear();
   if (num_files > 0) {
-      std::vector<std::string> tags_in_folder;
+      //std::vector<std::string> tags_in_folder;
       for (unsigned int i = 0; i < num_files; i++) {
-          readTagsFromFile (root_path + getFilename::FileW(filesW.at(i)) + L".txt", tags_in_folder, true);
+          readTagsFromFile (root_path + getFilename::FileW(filesW.at(i)) + L".txt", global_tags, true);
           }
-      update_tag_buttons(tags_in_folder);
+      update_tag_buttons();
       }
 
   // render current image that was indexed in the files array
@@ -2258,59 +2260,62 @@ Fl_Text_EditorDC::Fl_Text_EditorDC(int X,int Y,int W,int H,const char*l) : Fl_Te
 
 int Fl_Text_EditorDC::handle(int e) {
   switch ( e ) {
-      case FL_DND_DRAG: {return 1;}
-      case FL_PASTE: {
+  	case FL_DND_DRAG: {return 1;}
+  	case FL_PASTE: {
 
-      read_image(Fl::event_text());
-      return 1;
-        }
-      case FL_KEYDOWN: {
-          if (box_draw) {break;}
-          if (debug) {std::cout << "EDITOR PRESS\n";}
-          // store the last key strokes
-          keycombo[1] = keycombo[0]; keycombo[0] = Fl::event_state();
+  		read_image(Fl::event_text());
+  		return 1;
+  		}
+  	case FL_KEYDOWN: {
+  		if (box_draw) {break;}
+  		if (debug) {std::cout << "EDITOR PRESS {" << Fl::event_key() << "}\n";}
 
-          // try to do auto complete some how..
-          //tag_word += Fl::event_key();
-          //if (Fl::event_key() == ',') {tag_word = "";}
-          //std::cout << tag_word << std::endl;
+  		// store the last key strokes
+  		keycombo[1] = keycombo[0]; keycombo[0] = Fl::event_state();
 
 
-          break;
-          }
-      case FL_KEYUP: {
-          if (box_draw) {break;}
-          if (debug) {std::cout << "EDITOR PRESS RELEASE\n";}
-          // store the last key strokes
-          keycombo[1] = keycombo[0]; keycombo[0] = 0;
+        //if (Fl::event_key() == ',') {}
+  		// try to do auto complete some how..
+  		//tag_word += Fl::event_key();
+  		//if (Fl::event_key() == ',') {tag_word = "";}
+  		//std::cout << tag_word << std::endl;
 
-          // Set Text changed flag
-          if (bit::get(write_txt, 1) == true && bit::get(write_txt, 2) == false) {
-              write_txt = bit::set(write_txt, 2, true);
-              }
-          break;
-          }
-      case FL_MOUSEWHEEL: {
 
-          // resize the text with the mouse wheel
-          if (box_draw) {break;}
-          if (((keycombo[0] & FL_CTRL) || (keycombo[0] == FL_Control_L || keycombo[0] == FL_Control_R)) && Fl::event_y() > edt_sdtags->y()) {
-              edt_font_size += (Fl::event_dy() * -4);
-              if      (edt_font_size < 8)  {edt_font_size = 8;}
-              else if (edt_font_size > 72) {edt_font_size = 72;}
-              edt_sdtags->textsize(edt_font_size);
+  		break;
+  		}
+  	case FL_KEYUP: {
+  		if (box_draw) {break;}
+  		if (debug) {std::cout << "EDITOR PRESS RELEASE\n";}
+  		// store the last key strokes
+  		keycombo[1] = keycombo[0]; keycombo[0] = 0;
 
-              edt_sdtags->redraw();
-              }
-          break;
-          }
-      default: {
-          if (debug) {
-              printf("[%2d] EDITOR = %2d = %s\n", 0, e, fl_eventnames[e]);
-              fflush(stdout);
-              }
-          }
-      }
+  		// Set Text changed flag
+  		if (bit::get(write_txt, 1) == true && bit::get(write_txt, 2) == false) {
+  			write_txt = bit::set(write_txt, 2, true);
+  			}
+  		break;
+  		}
+  	case FL_MOUSEWHEEL: {
+
+  		// resize the text with the mouse wheel
+  		if (box_draw) {break;}
+  		if (((keycombo[0] & FL_CTRL) || (keycombo[0] == FL_Control_L || keycombo[0] == FL_Control_R)) && Fl::event_y() > edt_sdtags->y()) {
+  			edt_font_size += (Fl::event_dy() * -4);
+  			if      (edt_font_size < 8)  {edt_font_size = 8;}
+  			else if (edt_font_size > 72) {edt_font_size = 72;}
+  			edt_sdtags->textsize(edt_font_size);
+
+  			edt_sdtags->redraw();
+  			}
+  		break;
+  		}
+  	default: {
+  		if (debug) {
+  			printf("[%2d] EDITOR = %2d = %s\n", 0, e, fl_eventnames[e]);
+  			fflush(stdout);
+  			}
+  		}
+  	}
   return(Fl_Text_Editor::handle(e));
 }
 
@@ -2531,7 +2536,7 @@ int Fl_GroupDC::handle(int e) {
 
   		if (bit::get(visiblity, 1)) {boxregion->show();} else {boxregion->hide();}
                   //                    boxregion->box(FL_NO_BOX);
-                  boxregion->labelfont(5);
+                  boxregion->labelfont(12);
 
 
                   //                        boxregion->selection_color((Fl_Color)14);
@@ -2540,7 +2545,10 @@ int Fl_GroupDC::handle(int e) {
                   //                        boxregion->color(Fl_Color(46));
 
 
-                  boxregion->labelfont(5);
+                  boxregion->labelcolor(fl_rgb_color(255, 255, 0));
+                  boxregion->labelfont(FL_HELVETICA_BOLD);
+                  boxregion->labeltype(FL_ENGRAVED_LABEL);
+                  boxregion->labelsize(14);
                   //boxregion->copy_label(tag_name.c_str());
                   //boxregion->callback((Fl_Callback*)tags_btn_update, (void*)boxregion->label());
                   shp_image->add(boxregion);
@@ -3172,63 +3180,63 @@ static void mnu_showregions_event() {
 static void mnu_showeditor_event() {
   Fl_Multi_Label *ml = (Fl_Multi_Label*)mnu_showeditor->label();
   if (bit::get(visiblity, 2)) {
-      // Hide
+  	// Hide
 
-      // Change Icon in Menu
-      mnu_showeditor->image(icon_unchecked());
-      ml->labela = (const char*)icon_unchecked();
+  	// Change Icon in Menu
+  	mnu_showeditor->image(icon_unchecked());
+  	ml->labela = (const char*)icon_unchecked();
 
-      // resize the image and editor panels
+  	// resize the image and editor panels
 
-      //tile_info->position(0, 50, 15, 88);
+  	//tile_info->position(0, 50, 15, 88);
 
-      // image pane
-      tile_view->size(tile_info->w(), lb_statusbar->y() - tile_view->y());
-      //tile_edit->resize(0,  lb_statusbar->y(), tile_view->w(), 0);
-      tile_edit->position(0, lb_statusbar->y());
+  	// image pane
+  	tile_view->size(tile_info->w(), lb_statusbar->y() - tile_view->y());
+  	//tile_edit->resize(0,  lb_statusbar->y(), tile_view->w(), 0);
+  	tile_edit->position(0, lb_statusbar->y());
 
 
-      //tile_edit->hide();
+  	//tile_edit->hide();
 
-      }
+  	}
   else {
-      // SHOW
+  	// SHOW
 
-      // Change Icon
-      mnu_showeditor->image(icon_checked());
-      ml->labela = (const char*)icon_checked();
+  	// Change Icon
+  	mnu_showeditor->image(icon_checked());
+  	ml->labela = (const char*)icon_checked();
 
 
-      // resize the image pane
-      //tile_info->position(0, 50, 15, 88);
+  	// resize the image pane
+  	//tile_info->position(0, 50, 15, 88);
 
-      tile_view->size(win_main->w(), (int)((double)win_main->h() * 0.71875));
-      tile_edit->resize(0, tile_view->y() + tile_view->h(), tile_view->w(), lb_statusbar->y() - (tile_view->y() + tile_view->h()));
+  	tile_view->size(win_main->w(), (int)((double)win_main->h() * 0.71875));
+  	tile_edit->resize(0, tile_view->y() + tile_view->h(), tile_view->w(), lb_statusbar->y() - (tile_view->y() + tile_view->h()));
 
-      //tile_edit->show();
-      }
+  	//tile_edit->show();
+  	}
   visiblity = bit::set(visiblity, 2, !bit::get(visiblity, 2));
   mnu_showeditor->label(_FL_MULTI_LABEL , (const char *)ml);
   redraw_ui();
 }
 
 static void mnu_showtags_event() {
-    Fl_Multi_Label *ml = (Fl_Multi_Label*)mnu_showtags->label();
-    if (bit::get(visiblity, 3)) {
-        mnu_showtags->image(icon_unchecked());
-        ml->labela = (const char*)icon_unchecked();
-        tag_sidebar_pack->hide();
-        visiblity = bit::set(visiblity, 3, false);
-        }
-    else {
-        mnu_showtags->image(icon_checked());
-        ml->labela = (const char*)icon_checked();
-        tag_sidebar_pack->show();
-        tag_sidebar_pack->resize(0, 20, (unsigned int)((double)win_main->w() * 0.25), shp_image->h());
-        visiblity = bit::set(visiblity, 3, true);
-        }
-    mnu_showtags->label(_FL_MULTI_LABEL , (const char *)ml);
-    }
+  Fl_Multi_Label *ml = (Fl_Multi_Label*)mnu_showtags->label();
+  if (bit::get(visiblity, 3)) {
+  	mnu_showtags->image(icon_unchecked());
+  	ml->labela = (const char*)icon_unchecked();
+  	tag_sidebar_pack->hide();
+  	visiblity = bit::set(visiblity, 3, false);
+  	}
+  else {
+  	mnu_showtags->image(icon_checked());
+  	ml->labela = (const char*)icon_checked();
+  	tag_sidebar_pack->show();
+  	tag_sidebar_pack->resize(0, 20, (unsigned int)((double)win_main->w() * 0.25), shp_image->h());
+  	visiblity = bit::set(visiblity, 3, true);
+  	}
+  mnu_showtags->label(_FL_MULTI_LABEL , (const char *)ml);
+}
 
 static void mnu_goto_start_event() {
   if (!isSelectionValid() || filesW.size() <= 1) {return;}
@@ -3281,442 +3289,516 @@ static void mnu_goto_last_event() {
 }
 
 static void mnu_export_region_event() {
+  std::wcout << L"work_path: \t" << work_path << std::endl;
 
-    std::wcout << L"work_path: \t" << work_path << std::endl;
+
+  // check working directory is valid
+  if (!os::doesFileExistW(work_path)) {
+  	fl_message("invalid path set");
+  	return;
+  	}
+
+  // collect csv files
+  std::vector<std::wstring> files = os::getFilesW(work_path + L"*.csv");
+  unsigned int num_files = files.size();
+  std::cout << "num csv files: \t" << num_files << std::endl;
+  // bail if no files
+  if (num_files == 0)  {
+  	fl_message("no csv files discovered");
+  	return;
+  	}
+
+  // process each csv
+  bytestream f;
+  std::wstring imgfile;
+  std::wstring newfile;
+  std::wstring fname;
+  std::vector<std::string> txt;
+  std::string str;
+  unsigned int num_rows;
+  unsigned int num_cols;
+  unsigned int name_col = 0;
+  unsigned int posx_col = 1;
+  unsigned int posy_col = 2;
+  unsigned int dimx_col = 3;
+  unsigned int dimy_col = 4;
+  unsigned int row_start;
+  unsigned int num_regions;
+  bool hasHeader;
+  std::string delimiter = ",";
+  std::vector<std::string> header;
+  std::vector<std::string> tmp;
+  unsigned int x;
+  std::string region_name;
+  unsigned int type = 256;
+  std::string ofile;
+  Fl_Image* img = nullptr;
+  unsigned char region_d;
+  signed int region_x = 0, region_y = 0, region_w = 0, region_h = 0;
+  bool imgpass;
+  unsigned int c = 0;
+  unsigned int buf_size;
+  for (unsigned int r = 0; r < num_files; r++) {
+
+  	// get base name
+  	fname = getFilename::FileW(files.at(r));
+
+  	// get image pair
+  	imgfile = L"";
+  	for (unsigned int k = 0; k < 4; k++) {
+
+  		// make filepath to new folder
+  		newfile = work_path + fname + knownTypes[k];
+
+  		// skip if no file found
+  		if (!os::doesFileExistW(newfile)) {continue;}
+
+  		// collect image path
+  		imgfile = newfile;
+  		type = k;
+  		break;
+  		}
+
+  	// skip if no image pair found
+  	if (imgfile == L"") {continue;}
+
+  	// skip if fail to open file
+  	if (!f.openFileW(files.at(r))) {continue;}
+
+  	// Load Image
+  	img = nullptr;
+  	imgpass = true;
+  	ofile = unicode_to_utf8(imgfile);
+  	switch (type) {
+  		case 0: {
+  			Fl_JPEG_Image* jpg = new Fl_JPEG_Image(ofile.c_str());
+  			char* errMsg = nullptr;
+  			size_t errMsgLen = 0;
+  			switch ( jpg->fail() ) { // Check for Errors
+  				case Fl_Image::ERR_NO_IMAGE:
+  				case Fl_Image::ERR_FILE_ACCESS: {
+  					strerror_s(errMsg, errMsgLen, errno);
+  					fl_alert("%s: %s", ofile.c_str(), std::string(errMsg).c_str());
+  					if (errMsg != nullptr) {delete errMsg;}
+  					imgpass = false;
+  					break;
+  					}
+  				case Fl_Image::ERR_FORMAT: {
+  					fl_alert("%s: couldn't decode image", ofile.c_str());
+  					imgpass = false;
+  					break;
+  					}
+  				}
+  			if (imgpass) {img = jpg->copy();}
+  			delete jpg;
+  			break;
+  			}
+  		case 1: {
+  			Fl_JPEG_Image* jpg = new Fl_JPEG_Image(ofile.c_str());
+  			char* errMsg = nullptr;
+  			size_t errMsgLen = 0;
+  			switch ( jpg->fail() ) { // Check for Errors
+  				case Fl_Image::ERR_NO_IMAGE:
+  				case Fl_Image::ERR_FILE_ACCESS: {
+  					strerror_s(errMsg, errMsgLen, errno);
+  					fl_alert("%s: %s", ofile.c_str(), std::string(errMsg).c_str());
+  					if (errMsg != nullptr) {delete errMsg;}
+  					imgpass = false;
+  					break;
+  					}
+  				case Fl_Image::ERR_FORMAT: {
+  					fl_alert("%s: couldn't decode image", ofile.c_str());
+  					imgpass = false;
+  					break;
+  					}
+  				}
+  			if (imgpass) {img = jpg->copy();}
+  			delete jpg;
+  			break;
+  			}
+  		case 2: {
+  			Fl_BMP_Image* bmp = new Fl_BMP_Image(ofile.c_str());
+  			char* errMsg = nullptr;
+  			size_t errMsgLen = 0;
+  			switch ( bmp->fail() ) { // Check for Errors
+  				case Fl_Image::ERR_NO_IMAGE:
+  				case Fl_Image::ERR_FILE_ACCESS: {
+  					strerror_s(errMsg, errMsgLen, errno);
+  					fl_alert("%s: %s", ofile.c_str(), std::string(errMsg).c_str()); break;
+  					if (errMsg != nullptr) { delete errMsg; }
+  					imgpass = false;
+  					break;
+  					}
+  				case Fl_Image::ERR_FORMAT: {
+  					fl_alert("%s: couldn't decode image", ofile.c_str());
+  					imgpass = false;
+  					break;
+  					}
+  				}
+  			if (imgpass) {img = bmp->copy();}
+  			delete bmp;
+  			break;
+  			}
+  		case 3: {
+  			Fl_PNG_Image* png = new Fl_PNG_Image(ofile.c_str());
+  			char* errMsg = nullptr;
+  			size_t errMsgLen = 0;
+  			switch ( png->fail() ) { // Check for Errors
+  				case Fl_Image::ERR_NO_IMAGE:
+  				case Fl_Image::ERR_FILE_ACCESS: {
+  					strerror_s(errMsg, errMsgLen, errno);
+  					fl_alert("%s: %s", ofile.c_str(), std::string(errMsg).c_str()); break;
+  					if (errMsg != nullptr) { delete errMsg; }
+  					imgpass = false;
+  					break;
+  					}
+  				case Fl_Image::ERR_FORMAT: {
+  					fl_alert("%s: couldn't decode image", ofile.c_str());
+  					imgpass = false;
+  					break;
+  					}
+  				}
+  			if (imgpass) {img = png->copy();}
+  			delete png;
+  			break;
+  			}
+
+  		default: {
+  			std::cout << "unsupported type\n";
+
+  			}
+  		}
 
 
+  	if (img == nullptr) {
+  		f.close();
+  		continue;
+  		}
+
+  	// read the first buffer pointer to the RGB data, I didnt understand what the doc said about multiple image arrays, sooo
+  	const char* buf = static_cast<const char*>( *img->data() );
+
+
+  	// read each line of the text
+  	txt.clear();
+  	while (!f.eos()) {
+  		str = trim(f.readline());
+  		if (str.size() > 0) {
+  			txt.push_back(str);
+  			}
+  		}
+
+  	// check that txt isn't empty
+  	num_rows = txt.size();
+  	std::cout << "num_rows: \t" << num_rows << std::endl;
+  	if (num_rows > 0 && txt.at(0).size() > 0) {
+
+  		// check for header
+  		header = split(txt.at(0), delimiter);
+
+  		// if no header, check the file isn't using a different seperator character
+  		num_cols = header.size();
+  		std::cout << "num_cols: \t" << num_cols << std::endl;
+  		if (num_cols == 0) {
+  			delimiter = "\t";
+  			header = split(txt.at(0), delimiter);
+  			num_cols = header.size();
+  			}
+
+  		// correct for header if present
+
+  		hasHeader = false;
+  		for (unsigned int i = 0; i < num_cols; i++) {
+  			// lowercase
+  			header.at(i) = trim(tolower(header.at(i)), " ");
+
+  			// search and collect index for each col
+  			if      (header.at(i).find("name")   == 0) {name_col = i; hasHeader = true;}
+  			else if (header.at(i).find("posx")   == 0) {posx_col = i; hasHeader = true;}
+  			else if (header.at(i).find("posy")   == 0) {posy_col = i; hasHeader = true;}
+  			else if (header.at(i).find("width")  == 0) {dimx_col = i; hasHeader = true;}
+  			else if (header.at(i).find("height") == 0) {dimy_col = i; hasHeader = true;}
+  			}
+
+  		// set starting row
+  		row_start = 0;
+  		if (hasHeader) {row_start = 1;}
+
+  		// check that theres rows to read
+  		num_regions = num_rows - row_start;
+  		std::cout << "num_regions: \t" << num_regions << std::endl;
+  		if (num_regions > 0) {
+
+  			// parse each line of the csv
+  			tmp.clear();
+  			region_w = 0;
+  			region_h = 0;
+  			for (unsigned int i = 0; i < num_regions; i++) {
+
+  				// copy string
+  				str = txt.at(row_start + i);
+
+
+  				// parse out values
+  				while (str.size() > 0) {
+
+
+  					// check if there is a quoted value
+  					if (str.substr(0, 1) == "\"") {
+  						// trim out the first character
+  						str = str.substr(1, str.size() - 1);
+
+  						// check for trailing quote
+  						x = str.find("\"");
+  						if (x != std::string::npos && x > 0) {
+
+  							// add value to the temp array
+  							tmp.push_back(str.substr(0, x));
+
+  							// remove from string
+  							str.erase(0, x);
+  							x = str.find(delimiter);
+  							if (x != std::string::npos) {
+  								str.erase(0, x + 1);
+  								} else {str.erase(0, str.size());}
+  							}
+  						else {
+  							x = str.find(delimiter);
+  							if (x != std::string::npos) {
+  								str.erase(0, x + 1);
+  								} else {str.erase(0, str.size());}
+  							}
+  						}
+
+  					// check if there is a delimiter character
+  					else if ((x = str.find(delimiter)) != std::string::npos) {
+
+  						if (x > 0) {
+  							// add value to the temp array
+
+
+
+  							tmp.push_back(str.substr(0, x));
+  							str.erase(0, x + 1);
+
+  							}
+  						else {
+  							// empty
+  							tmp.push_back("");
+  							str.erase(0, 1);
+
+  							}
+
+  						}
+
+  					// just copy to the end of the string
+  					else {
+
+  						tmp.push_back(str.substr(0, str.size()));
+  						str.erase(0, str.size());
+  						str.clear();
+  						}
+
+  					// trim whitespace
+  					str = trim(str);
+
+  					}
+
+
+  				// check that temp array is valid
+  				x = tmp.size();
+  				if (x > 0) {
+  					// update region data
+  					if (name_col < x) {region_name = tmp.at(name_col);}
+  					if (posx_col < x) {region_x    = convert_to<signed int>(tmp.at(posx_col));}
+  					if (posy_col < x) {region_y    = convert_to<signed int>(tmp.at(posy_col));}
+  					if (dimx_col < x) {region_w    = convert_to<signed int>(tmp.at(dimx_col));}
+  					if (dimy_col < x) {region_h    = convert_to<signed int>(tmp.at(dimy_col));}
+  					}
+
+  				// clear temp array
+  				tmp.clear();
+
+
+
+  				// modify the region position and dimension if out of bounds from the image
+  				signed int dif;
+  				if (region_x - (region_w / 2) < -(img->w() / 2)) {
+  					dif = -(img->w() / 2) - region_x + (region_w / 2);
+  					region_x += (signed int)(dif / 2.0);
+  					region_w -= dif;
+  					}
+  				if (region_y - (region_h / 2) < -(img->h() / 2)) {
+  					dif = -(img->h() / 2) - region_y + (region_h / 2);
+  					region_y += (signed int)(dif / 2.0);
+  					region_h -= dif;
+  					}
+  				if (region_x + (region_w / 2) > (img->w() / 2)) {
+  					dif = (img->w() / 2) - region_x - (region_w / 2);
+  					region_x += (signed int)(dif / 2.0);
+  					region_w += dif;
+  					}
+  				if (region_y + (region_h / 2) > (img->h() / 2)) {
+  					dif = (img->h() / 2) - region_y - (region_h / 2);
+  					region_y += (signed int)(dif / 2.0);
+  					region_h += dif;
+  					}
+
+  				// check region info is valid
+  				std::cout << "region dim: \t" << region_w << " x " << region_h << std::endl;
+  				if (img !=nullptr && region_w > 0 && region_h > 0) {
+
+  					region_d = img->d();
+
+  					// move box corrdinate from center to upper left
+  					region_x -= region_w / 2;
+  					region_y -= region_h / 2;
+  					region_x += img->w() / 2;
+  					region_y += img->h() / 2;
+
+
+  					// calculate the buffer size
+  					buf_size = region_w * region_h * region_d;
+
+  					signed long read_pos = ((region_y * img->w()) + region_x) * region_d;
+  					signed long lineskip = (img->w() - region_w) * region_d;
+  					if (buf_size > 0 && read_pos >= 0 && lineskip >= 0) {
+
+  						// create a buffer
+  						char* rimg = new char[buf_size];
+
+  						std::cout << "region_x: \t" << region_x << std::endl;
+  						std::cout << "region_y: \t" << region_y << std::endl << std::endl;
+  						std::cout << "region_w: \t" << region_w << std::endl;
+  						std::cout << "region_h: \t" << region_h << std::endl;
+  						std::cout << "region_d: \t" << (int)region_d << std::endl;
+
+  						std::cout << "corrected dim: \t" << region_w << " x " << region_h << std::endl;
+  						std::cout << "pos: \t" << read_pos << std::endl;
+
+  						// copy pixels from main buffer to temp buffer
+  						unsigned int v = 0;
+  						unsigned int w = read_pos;
+  							for (signed int x = 0; x < region_h; x++) {
+  						for (int y = 0; y < region_w; y++) {
+  								for (unsigned int c = 0; c < region_d; c++) {
+
+  									rimg[v++] = buf[w++];
+
+
+  									}
+  								}
+  							w = read_pos + (x * img->w() * region_d);
+  							}
+
+
+  						// i was confused about how I can save png's from in FLTK, so i just wrote my own exporter
+  						bytestream p;
+  						p.asPNG(rimg, region_w, region_h, (int)region_d, false, false);
+
+  						// Save the PNG image to a file
+  						std::wcout << L"save file: \t" << work_path << fname << L" region" << string_to_wstring(to_string(++c)) << L".png" << std::endl;
+  						p.writeFileW(work_path + fname + string_to_wstring(region_name) + L" region" + string_to_wstring(to_string(++c)) + L".png");
+  						p.close();
+
+  						// delete buffer
+  						delete[] rimg;
+
+
+  						}
+
+
+
+  					}
+
+
+
+  				}
+  			}
+  		}
+
+  	// close file
+  	delete img;
+  	f.close();
+
+  	}
+}
+
+static void mnu_set_region_all() {
+
+    // check working directory is valid
     // check working directory is valid
     if (!os::doesFileExistW(work_path)) {
         fl_message("invalid path set");
         return;
         }
 
-    // collect csv files
-    std::vector<std::wstring> files = os::getFilesW(work_path + L"*.csv");
+    // collect files
+    std::vector<std::wstring> files = os::getFilesW(work_path + L"*.*");
     unsigned int num_files = files.size();
-    std::cout << "num csv files: \t" << num_files << std::endl;
-    // bail if no files
-    if (num_files == 0)  {
-        fl_message("no csv files discovered");
-        return;
-        }
 
-    // process each csv
-    bytestream f;
-    std::wstring imgfile;
-    std::wstring newfile;
-    std::wstring fname;
-    std::vector<std::string> txt;
-    std::string str;
-    unsigned int num_rows;
-    unsigned int num_cols;
-    unsigned int name_col = 0;
-    unsigned int posx_col = 1;
-    unsigned int posy_col = 2;
-    unsigned int dimx_col = 3;
-    unsigned int dimy_col = 4;
-    unsigned int row_start;
+    // process files
+    std::wstring fext;
+    bool bail = false;
+    std::wstring csvfile;
+    std::vector<region_data> regions_from_csv;
     unsigned int num_regions;
-    bool hasHeader;
-    std::string delimiter = ",";
-    std::vector<std::string> header;
-    std::vector<std::string> tmp;
-    unsigned int x;
-    std::string region_name;
-    unsigned int type = 256;
-    std::string ofile;
-    Fl_Image* img = nullptr;
-    unsigned char region_d;
-    signed int region_x = 0, region_y = 0, region_w = 0, region_h = 0;
-    bool imgpass;
-    unsigned int c = 0;
-    unsigned int buf_size;
-    for (unsigned int r = 0; r < num_files; r++) {
+    bool addNewRegion;
+    unsigned int w, h;
+    for (unsigned int i = 0; i < num_files; i++) {
 
-        // get base name
-        fname = getFilename::FileW(files.at(r));
+        // get file extension
+        fext = toLowerW(getFilename::TypeW(files.at(i)));
 
-        // get image pair
-        imgfile = L"";
+        // check for valid image type
+        bail = true;
         for (unsigned int k = 0; k < 4; k++) {
-
-            // make filepath to new folder
-            newfile = work_path + fname + knownTypes[k];
-
-            // skip if no file found
-            if (!os::doesFileExistW(newfile)) {continue;}
-
-            // collect image path
-            imgfile = newfile;
-            type = k;
-            break;
-            }
-
-        // skip if no image pair found
-        if (imgfile == L"") {continue;}
-
-        // skip if fail to open file
-        if (!f.openFileW(files.at(r))) {continue;}
-
-        // Load Image
-        img = nullptr;
-        imgpass = true;
-        ofile = unicode_to_utf8(imgfile);
-        switch (type) {
-            case 0: {
-                Fl_JPEG_Image* jpg = new Fl_JPEG_Image(ofile.c_str());
-                char* errMsg = nullptr;
-                size_t errMsgLen = 0;
-                switch ( jpg->fail() ) { // Check for Errors
-                    case Fl_Image::ERR_NO_IMAGE:
-                    case Fl_Image::ERR_FILE_ACCESS: {
-                        strerror_s(errMsg, errMsgLen, errno);
-                        fl_alert("%s: %s", ofile.c_str(), errMsg);
-                        if (errMsg != nullptr) {delete errMsg;}
-                        imgpass = false;
-                        break;
-                        }
-                    case Fl_Image::ERR_FORMAT: {
-                        fl_alert("%s: couldn't decode image", ofile.c_str());
-                        imgpass = false;
-                        break;
-                        }
-                    }
-                if (imgpass) {img = jpg->copy();}
-                delete jpg;
+            if (fext == knownTypes[k]) {
+                bail = false;
                 break;
                 }
-            case 1: {
-                Fl_JPEG_Image* jpg = new Fl_JPEG_Image(ofile.c_str());
-                char* errMsg = nullptr;
-                size_t errMsgLen = 0;
-                switch ( jpg->fail() ) { // Check for Errors
-                    case Fl_Image::ERR_NO_IMAGE:
-                    case Fl_Image::ERR_FILE_ACCESS: {
-                        strerror_s(errMsg, errMsgLen, errno);
-                        fl_alert("%s: %s", ofile.c_str(), errMsg);
-                        if (errMsg != nullptr) {delete errMsg;}
-                        imgpass = false;
-                        break;
-                        }
-                    case Fl_Image::ERR_FORMAT: {
-                        fl_alert("%s: couldn't decode image", ofile.c_str());
-                        imgpass = false;
-                        break;
-                        }
-                    }
-                if (imgpass) {img = jpg->copy();}
-                delete jpg;
-                break;
-                }
-            case 2: {
-                Fl_BMP_Image* bmp = new Fl_BMP_Image(ofile.c_str());
-                char* errMsg = nullptr;
-                size_t errMsgLen = 0;
-                switch ( bmp->fail() ) { // Check for Errors
-                    case Fl_Image::ERR_NO_IMAGE:
-                    case Fl_Image::ERR_FILE_ACCESS: {
-                        strerror_s(errMsg, errMsgLen, errno);
-                        fl_alert("%s: %s", ofile.c_str(), errMsg); break;
-                        if (errMsg != nullptr) { delete errMsg; }
-                        imgpass = false;
-                        break;
-                        }
-                    case Fl_Image::ERR_FORMAT: {
-                        fl_alert("%s: couldn't decode image", ofile.c_str());
-                        imgpass = false;
-                        break;
-                        }
-                    }
-                if (imgpass) {img = bmp->copy();}
-                delete bmp;
-                break;
-                }
-            case 3: {
-                Fl_PNG_Image* png = new Fl_PNG_Image(ofile.c_str());
-                char* errMsg = nullptr;
-                size_t errMsgLen = 0;
-                switch ( png->fail() ) { // Check for Errors
-                    case Fl_Image::ERR_NO_IMAGE:
-                    case Fl_Image::ERR_FILE_ACCESS: {
-                        strerror_s(errMsg, errMsgLen, errno);
-                        fl_alert("%s: %s", ofile.c_str(), errMsg); break;
-                        if (errMsg != nullptr) { delete errMsg; }
-                        imgpass = false;
-                        break;
-                        }
-                    case Fl_Image::ERR_FORMAT: {
-                        fl_alert("%s: couldn't decode image", ofile.c_str());
-                        imgpass = false;
-                        break;
-                        }
-                    }
-                if (imgpass) {img = png->copy();}
-                delete png;
-                break;
-                }
-
-            default: {
-                std::cout << "unsupported type\n";
-
-                }
             }
 
+        // bail if type not supported
+        if (bail) {continue;}
 
-        if (img == nullptr) {
-            f.close();
-            continue;
-            }
+        // look for csv file
+        csvfile = work_path + getFilename::FileW(files.at(i)) + L".csv";
 
-        // read the first buffer pointer to the RGB data, I didnt understand what the doc said about multiple image arrays, sooo
-        const char* buf = static_cast<const char*>( *img->data() );
+        // bail if can't find the csv
+        if (!os::doesFileExistW(csvfile)) {continue;}
 
+        regions_from_csv = settings->readRegionCSV(csvfile);
+        num_regions = regions_from_csv.size();
+        if (num_regions > 0) {
 
-        // read each line of the text
-        txt.clear();
-        while (!f.eos()) {
-            str = trim(f.readline());
-            if (str.size() > 0) {
-                txt.push_back(str);
-                }
-            }
-
-        // check that txt isn't empty
-        num_rows = txt.size();
-        std::cout << "num_rows: \t" << num_rows << std::endl;
-        if (num_rows > 0 && txt.at(0).size() > 0) {
-
-            // check for header
-            header = split(txt.at(0), delimiter);
-
-            // if no header, check the file isn't using a different seperator character
-            num_cols = header.size();
-            std::cout << "num_cols: \t" << num_cols << std::endl;
-            if (num_cols == 0) {
-                delimiter = "\t";
-                header = split(txt.at(0), delimiter);
-                num_cols = header.size();
+            // look for a entry called region
+            addNewRegion = true;
+            for (unsigned int j = 0; j < num_regions; j++) {
+                if (tolower(regions_from_csv.at(j).tag) == "region") {
+                    addNewRegion = false;
+                    }
                 }
 
-            // correct for header if present
+            if (addNewRegion) {
 
-            hasHeader = false;
-            for (unsigned int i = 0; i < num_cols; i++) {
-                // lowercase
-                header.at(i) = trim(tolower(header.at(i)), " ");
+                // read dimensions from image file
+                readDimFromImage(files.at(i), w, h);
 
-                // search and collect index for each col
-                if      (header.at(i).find("name")   == 0) {name_col = i; hasHeader = true;}
-                else if (header.at(i).find("posx")   == 0) {posx_col = i; hasHeader = true;}
-                else if (header.at(i).find("posy")   == 0) {posy_col = i; hasHeader = true;}
-                else if (header.at(i).find("width")  == 0) {dimx_col = i; hasHeader = true;}
-                else if (header.at(i).find("height") == 0) {dimy_col = i; hasHeader = true;}
-                }
+                // check dimensions are valid
+                if (w > 0 && h > 0) {
 
-            // set starting row
-            row_start = 0;
-            if (hasHeader) {row_start = 1;}
+                    // square off the dimensions
+                    if (w < h) {regions_from_csv.push_back(region_data(w, w, 0, 0, "region", false));}
+                    else {regions_from_csv.push_back(region_data(h, h, 0, 0, "region", false));}
 
-            // check that theres rows to read
-            num_regions = num_rows - row_start;
-            std::cout << "num_regions: \t" << num_regions << std::endl;
-            if (num_regions > 0) {
-
-                // parse each line of the csv
-                tmp.clear();
-                region_w = 0;
-                region_h = 0;
-                for (unsigned int i = 0; i < num_regions; i++) {
-
-                    // copy string
-                    str = txt.at(row_start + i);
-
-
-                    // parse out values
-                    while (str.size() > 0) {
-
-
-                        // check if there is a quoted value
-                        if (str.substr(0, 1) == "\"") {
-                            // trim out the first character
-                            str = str.substr(1, str.size() - 1);
-
-                            // check for trailing quote
-                            x = str.find("\"");
-                            if (x != std::string::npos && x > 0) {
-
-                                // add value to the temp array
-                                tmp.push_back(str.substr(0, x));
-
-                                // remove from string
-                                str.erase(0, x);
-                                x = str.find(delimiter);
-                                if (x != std::string::npos) {
-                                    str.erase(0, x + 1);
-                                    } else {str.erase(0, str.size());}
-                                }
-                            else {
-                                x = str.find(delimiter);
-                                if (x != std::string::npos) {
-                                    str.erase(0, x + 1);
-                                    } else {str.erase(0, str.size());}
-                                }
-                            }
-
-                        // check if there is a delimiter character
-                        else if ((x = str.find(delimiter)) != std::string::npos) {
-
-                            if (x > 0) {
-                                // add value to the temp array
-
-
-
-                                tmp.push_back(str.substr(0, x));
-                                str.erase(0, x + 1);
-
-                                }
-                            else {
-                                // empty
-                                tmp.push_back("");
-                                str.erase(0, 1);
-
-                                }
-
-                            }
-
-                        // just copy to the end of the string
-                        else {
-
-                            tmp.push_back(str.substr(0, str.size()));
-                            str.erase(0, str.size());
-                            str.clear();
-                            }
-
-                        // trim whitespace
-                        str = trim(str);
-
-                        }
-
-
-                    // check that temp array is valid
-                    x = tmp.size();
-                    if (x > 0) {
-                        // update region data
-                        if (name_col < x) {region_name = tmp.at(name_col);}
-                        if (posx_col < x) {region_x    = convert_to<signed int>(tmp.at(posx_col));}
-                        if (posy_col < x) {region_y    = convert_to<signed int>(tmp.at(posy_col));}
-                        if (dimx_col < x) {region_w    = convert_to<signed int>(tmp.at(dimx_col));}
-                        if (dimy_col < x) {region_h    = convert_to<signed int>(tmp.at(dimy_col));}
-                        }
-
-                    // clear temp array
-                    tmp.clear();
-
-
-
-                    // modify the region position and dimension if out of bounds from the image
-                    signed int dif;
-                    if (region_x - (region_w / 2) < -(img->w() / 2)) {
-                        dif = -(img->w() / 2) - region_x + (region_w / 2);
-                        region_x += (signed int)(dif / 2.0);
-                        region_w -= dif;
-                        }
-                    if (region_y - (region_h / 2) < -(img->h() / 2)) {
-                        dif = -(img->h() / 2) - region_y + (region_h / 2);
-                        region_y += (signed int)(dif / 2.0);
-                        region_h -= dif;
-                        }
-                    if (region_x + (region_w / 2) > (img->w() / 2)) {
-                        dif = (img->w() / 2) - region_x - (region_w / 2);
-                        region_x += (signed int)(dif / 2.0);
-                        region_w += dif;
-                        }
-                    if (region_y + (region_h / 2) > (img->h() / 2)) {
-                        dif = (img->h() / 2) - region_y - (region_h / 2);
-                        region_y += (signed int)(dif / 2.0);
-                        region_h += dif;
-                        }
-
-                    // check region info is valid
-                    std::cout << "region dim: \t" << region_w << " x " << region_h << std::endl;
-                    if (img !=nullptr && region_w > 0 && region_h > 0) {
-
-                        region_d = img->d();
-
-                        // move box corrdinate from center to upper left
-                        region_x -= region_w / 2;
-                        region_y -= region_h / 2;
-                        region_x += img->w() / 2;
-                        region_y += img->h() / 2;
-
-
-                        // calculate the buffer size
-                        buf_size = region_w * region_h * region_d;
-
-                        signed long read_pos = ((region_y * img->w()) + region_x) * region_d;
-                        signed long lineskip = (img->w() - region_w) * region_d;
-                        if (buf_size > 0 && read_pos >= 0 && lineskip >= 0) {
-
-                            // create a buffer
-                            char* rimg = new char[buf_size];
-
-                            std::cout << "region_x: \t" << region_x << std::endl;
-                            std::cout << "region_y: \t" << region_y << std::endl << std::endl;
-                            std::cout << "region_w: \t" << region_w << std::endl;
-                            std::cout << "region_h: \t" << region_h << std::endl;
-                            std::cout << "region_d: \t" << (int)region_d << std::endl;
-
-                            std::cout << "corrected dim: \t" << region_w << " x " << region_h << std::endl;
-                            std::cout << "pos: \t" << read_pos << std::endl;
-
-                            // copy pixels from main buffer to temp buffer
-                            unsigned int v = 0;
-                            unsigned int w = read_pos;
-                                for (signed int x = 0; x < region_h; x++) {
-                            for (int y = 0; y < region_w; y++) {
-                                    for (unsigned int c = 0; c < region_d; c++) {
-
-                                        rimg[v++] = buf[w++];
-
-
-                                        }
-                                    }
-                                w = read_pos + (x * img->w() * region_d);
-                                }
-
-
-                            // i was confused about how I can save png's from in FLTK, so i just wrote my own exporter
-                            bytestream p;
-                            p.asPNG(rimg, region_w, region_h, (int)region_d, false, false);
-
-                            // Save the PNG image to a file
-                            std::wcout << L"save file: \t" << work_path << fname << L" region" << string_to_wstring(to_string(++c)) << L".png" << std::endl;
-                            p.writeFileW(work_path + fname + string_to_wstring(region_name) + L" region" + string_to_wstring(to_string(++c)) + L".png");
-                            p.close();
-
-                            // delete buffer
-                            delete[] rimg;
-
-
-                            }
-
-
-
-                        }
-
-
-
+                    // write out the region file
+                    settings->writeRegionCSV(csvfile, regions_from_csv);
                     }
                 }
             }
-
-        // close file
-        delete img;
-        f.close();
-
+        regions_from_csv.clear();
         }
-
-
     }
 
 static void mnu_recent_file_event(Fl_Widget* o, void* userdata) {
@@ -3829,6 +3911,9 @@ Fl_Menu_Item menu_mnu_bar[] = {
  {"&Delete Tags in Path", 0,  (Fl_Callback*)modify_tags_in_path, (void*)("2"), 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
  {"&Replace Tags in Path", 0,  (Fl_Callback*)modify_tags_in_path, (void*)("3"), 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
  {"&Overwrite Tags in Path", 0,  (Fl_Callback*)modify_tags_in_path, (void*)("4"), 128, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
+ {0,0,0,0,0,0,0,0,0},
+ {"&Regions", 0,  0, 0, 64, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
+ {"Set Square on all", 0,  (Fl_Callback*)mnu_set_region_all, 0, 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
  {"&Export Regions", 0,  (Fl_Callback*)mnu_export_region_event, 0, 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
  {0,0,0,0,0,0,0,0,0},
  {"&About", 0,  0, 0, 64, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
@@ -4027,13 +4112,16 @@ Fl_Double_Window* make_window() {
       { Fl_Menu_Item* o = &menu_mnu_bar[47];
         add_multi_label(o, icon_dummy());
       }
-      { Fl_Menu_Item* o = &menu_mnu_bar[48];
+      { Fl_Menu_Item* o = &menu_mnu_bar[50];
         add_multi_label(o, icon_dummy());
       }
       { Fl_Menu_Item* o = &menu_mnu_bar[51];
         add_multi_label(o, icon_dummy());
       }
-      { Fl_Menu_Item* o = &menu_mnu_bar[52];
+      { Fl_Menu_Item* o = &menu_mnu_bar[54];
+        add_multi_label(o, icon_dummy());
+      }
+      { Fl_Menu_Item* o = &menu_mnu_bar[55];
         add_multi_label(o, icon_dummy());
       }
       mnu_bar->menu(menu_mnu_bar);

@@ -651,7 +651,7 @@ bool database::open (const char* dbfile, bool verbose) {
             std::string str;
             std::string key = os::machineName();
             unsigned int strlen;
-            
+
             for (unsigned char i = 0; i < num_recents; i++) {
                 str = ini.get_string("recents", "file" + to_string((int)i));
                 strlen = str.size();
@@ -679,18 +679,18 @@ bool database::open (const char* dbfile, bool verbose) {
     }
 
 void database::save_recents_as_ini () {
-    
+
     std::string ini = "[recents]\r\n";
     unsigned int inilen = ini.size();
     std::string str  = "";
-    
+
     std::string key = os::machineName();
     //std::cout << "Key: \t" << key << std::endl;
     unsigned int num_rencets = recents.size();
     bytestream s;
     for (unsigned int i = 0; i < num_rencets; i++) {
         if (recents.at(i).size() == 0) {continue;}
-        
+
         s.resize(recents.at(i).size());
         s.seek(0);
         s.writestring(recents.at(i), recents.at(i).size());
@@ -699,7 +699,7 @@ void database::save_recents_as_ini () {
         if (str.size() > 0) {
             ini += "file" + to_string(i) + "=" + str + "\r\n";
             }
-        
+
         }
     s.close();
     if (ini.size() > inilen) {
@@ -707,7 +707,7 @@ void database::save_recents_as_ini () {
         t.writeFile("config.ini", 0, ini.size(), (char*)ini.c_str());
         t.close();
         }
-    
+
     }
 
 void database::close () {
@@ -1498,4 +1498,201 @@ bool database::writeCSV (std::string file, signed int index) {
             }
         }
     return false;
+    }
+
+std::vector<region_data> database::readRegionCSV (std::wstring file, std::string delimiter) {
+    /*
+        oof, forgot about ; being a comment
+    */
+	// array to return
+	std::vector<region_data> rcsv;
+
+	// open file
+	bytestream f;
+	if (!f.openFileW(file)) {return rcsv;}
+
+	// read each line of the text
+	std::string str;
+  	std::vector<std::string> txt;
+	while (!f.eos()) {
+		str = trim(f.readline());
+		if (str.size() > 0) {
+			txt.push_back(str);
+			}
+		}
+
+	// check that txt isn't empty
+	unsigned int num_rows = txt.size();
+    unsigned int name_col;
+    unsigned int posx_col;
+    unsigned int posy_col;
+    unsigned int dimx_col;
+    unsigned int dimy_col;
+	if (num_rows > 0 && txt.at(0).size() > 0) {
+
+		// check for header
+		std::vector<std::string> header = split(txt.at(0), delimiter);
+
+		// if no header, check the file isn't using a different seperator character
+		unsigned int num_cols = header.size();
+		if (num_cols == 0) {
+			delimiter = "\t";
+			header = split(txt.at(0), delimiter);
+			num_cols = header.size();
+			}
+
+		// correct for header if present
+		bool hasHeader = false;
+		name_col = num_cols;
+		posx_col = num_cols;
+		posy_col = num_cols;
+		dimx_col = num_cols;
+		dimy_col = num_cols;
+		for (unsigned int i = 0; i < num_cols; i++) {
+			// lowercase
+			header.at(i) = trim(tolower(header.at(i)), " ");
+
+			// search and collect index for each col
+			if      (header.at(i).find("name")   == 0) {name_col = i; hasHeader = true;}
+			else if (header.at(i).find("posx")   == 0) {posx_col = i; hasHeader = true;}
+			else if (header.at(i).find("posy")   == 0) {posy_col = i; hasHeader = true;}
+			else if (header.at(i).find("width")  == 0) {dimx_col = i; hasHeader = true;}
+			else if (header.at(i).find("height") == 0) {dimy_col = i; hasHeader = true;}
+			}
+
+		// set starting row
+		unsigned int row_start = 0;
+		if (hasHeader) {row_start = 1;}
+
+		// check that theres rows to read
+		unsigned int num_regions = num_rows - row_start;
+		unsigned int x;
+		if (num_regions > 0) {
+
+			// parse each line of the csv
+			std::vector<std::string> tmp;
+			signed int region_w = 0;
+			signed int region_h = 0;
+			signed int region_x = 0;
+			signed int region_y = 0;
+			std::string region_name = "";
+			for (unsigned int i = 0; i < num_regions; i++) {
+
+				// copy string
+				str = txt.at(row_start + i);
+
+
+				// parse out values
+				while (str.size() > 0) {
+
+
+					// check if there is a quoted value
+					if (str.substr(0, 1) == "\"") {
+						// trim out the first character
+						str = str.substr(1, str.size() - 1);
+
+						// check for trailing quote
+						x = str.find("\"");
+						if (x != std::string::npos && x > 0) {
+
+							// add value to the temp array
+							tmp.push_back(str.substr(0, x));
+
+							// remove from string
+							str.erase(0, x);
+							x = str.find(delimiter);
+							if (x != std::string::npos) {
+								str.erase(0, x + 1);
+								} else {str.erase(0, str.size());}
+							}
+						else {
+							x = str.find(delimiter);
+							if (x != std::string::npos) {
+								str.erase(0, x + 1);
+								} else {str.erase(0, str.size());}
+							}
+						}
+
+					// check if there is a delimiter character
+					else if ((x = str.find(delimiter)) != std::string::npos) {
+
+						if (x > 0) {
+							// add value to the temp array
+							tmp.push_back(str.substr(0, x));
+							str.erase(0, x + 1);
+							}
+						else {
+							// empty
+							tmp.push_back("");
+							str.erase(0, 1);
+							}
+						}
+					// just copy to the end of the string
+					else {
+						tmp.push_back(str.substr(0, str.size()));
+						str.erase(0, str.size());
+						str.clear();
+						}
+					// trim whitespace
+					str = trim(str);
+					}
+				// check that temp array is valid
+				x = tmp.size();
+				if (x > 0) {
+					// update region data
+					if (name_col < x) {region_name = tmp.at(name_col);}
+					if (posx_col < x) {region_x    = convert_to<signed int>(tmp.at(posx_col));}
+					if (posy_col < x) {region_y    = convert_to<signed int>(tmp.at(posy_col));}
+					if (dimx_col < x) {region_w    = convert_to<signed int>(tmp.at(dimx_col));}
+					if (dimy_col < x) {region_h    = convert_to<signed int>(tmp.at(dimy_col));}
+					}
+
+				// clear temp array
+				tmp.clear();
+
+				// check region info is valid
+				if (region_w > 0 && region_h > 0) {
+					rcsv.push_back(
+                        region_data(
+                            region_w,
+                            region_h,
+                            region_x,
+                            region_y,
+                            region_name,
+                            false
+                            )
+                        );
+
+					}
+				}
+			}
+		}
+
+	// close file
+	f.close();
+
+	return rcsv;
+  	}
+
+bool database::writeRegionCSV (std::wstring file, std::vector<region_data> array_of_regions) {
+
+    if (file.size() == 0) {return false;}
+
+    unsigned int num_regions = array_of_regions.size();
+
+    if (num_regions == 0) {return false;}
+
+    std::string csv = "name,posx,posy,width,height\r\n";
+    for (unsigned int i = 0; i <num_regions; i++) {
+        csv += "\"" + array_of_regions.at(i).tag + "\"";
+        csv += to_string(array_of_regions.at(i).x) + ",";
+        csv += to_string(array_of_regions.at(i).y) + ",";
+        csv += to_string(array_of_regions.at(i).w) + ",";
+        csv += to_string(array_of_regions.at(i).h) + "\r\n";
+        }
+
+    bytestream s;
+    s.writeFileW(file, 0, csv.size(), (char*)csv.c_str());
+    s.close();
+    return true;
     }
